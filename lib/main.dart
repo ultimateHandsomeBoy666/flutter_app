@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:english_words/english_words.dart';
+import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,8 +19,15 @@ class MyApp extends StatelessWidget {
       // register route table
       routes: {
         "new_page": (context) => NewRoute(),
-        "tip_route": (context) => TipRoute(),
+        "tip_route": (context) => TipRoute(text: "!SDAS",),
         "/": (context) => MyHomePage(title: "home page"),
+      },
+      // onGenerateRoute 路由生成钩子
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(builder: (context) {
+          String routeName = settings.name;
+          return TipRoute(text: routeName);
+        });
       },
     );
   }
@@ -61,10 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             FlatButton(
               onPressed: () {
-                Navigator.pushNamed(context, "new_page");
+                Navigator.pushNamed(context, "tip_route");
               },
               child: Text("open new route"),
-              textColor:Colors.yellow)
+              textColor:Colors.yellow),
+            RandomWordsWidget(),
           ],
         ),
       ),
@@ -147,6 +157,17 @@ class RouterTestRoute extends StatelessWidget {
         },
         child: Text("打开提示页"),
       ),
+    );
+  }
+}
+
+class RandomWordsWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final wordPair = new WordPair.random();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Text(wordPair.toString()),
     );
   }
 }
