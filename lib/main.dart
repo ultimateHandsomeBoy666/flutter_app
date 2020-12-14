@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
@@ -37,10 +39,88 @@ class MyApp extends StatelessWidget {
       // home: new FindAncestorRoute(),
       // home: new CounterWidget(),
       // home: new CupertinoTestRoute(),
-      home: new ParentWidgetC()
+      // home: new ParentWidgetC()
+      home: new ButtonWidget(text : "yoyoyoyoyo")
+      // home: new ImageWidget()
     );
   }
 }
+
+class ButtonWidget extends StatelessWidget {
+  final String text;
+
+  ButtonWidget({Key key, this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      body: Center(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            RaisedButton(
+              child: Text(text),
+              onPressed: () {},
+            ),
+            FlatButton(
+              child: Text(text),
+              onPressed: () {},
+            ),
+            OutlineButton(
+              child: Text(text),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(Icons.thumb_up),
+              onPressed: () {},
+            ),
+            RaisedButton.icon(
+              icon: Icon(Icons.add),
+              label: Text("添加"),
+              onPressed: () {},
+            ),
+            FlatButton(
+              onPressed: () {},
+              color: Colors.lightGreen,
+              highlightColor: Colors.lightGreen[700],
+              colorBrightness: Brightness.light,
+              child: Text("\uE000",
+                style: TextStyle(
+                  fontFamily: "MaterialIcons",
+                  fontSize: 24.0,
+                  color: Colors.yellowAccent,
+                ),
+              ),
+              textColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ImageWidget extends StatelessWidget {
+  ImageWidget({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Image(
+          image: AssetImage("images/nightsky.jpeg"),
+          fit: BoxFit.scaleDown,
+          width: 300.0,
+          color: Colors.greenAccent,
+          colorBlendMode: BlendMode.difference,
+        ),
+      ),
+    );
+  }
+}
+
+
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
