@@ -79,6 +79,7 @@ abstract class Event {
 
 class _AnonymousEvent implements Event {
   _AnonymousEvent({Function run}): _run = run;
+  // 这里即使加了 void，和没加效果一样，void Function() 和 Function() 指的都是 dynamic Function() 类型
   final void Function() _run;
 
   @override
@@ -96,6 +97,9 @@ class _ProgressRouteState extends State<ProgressRoute>
 
   @override
   void initState() {
+    Event event = _AnonymousEvent(run: () {
+      return false;
+    });
     //动画执行时间3秒
     _animationController =
     new AnimationController(vsync: this, duration: Duration(seconds: 3));
