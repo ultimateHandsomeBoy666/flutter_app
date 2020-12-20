@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/rendering.dart';
+import 'dart:core';
 
 void main() {
   runApp(MyApp());
@@ -43,7 +44,84 @@ class MyApp extends StatelessWidget {
       // home: ButtonWidget(text : "yoyoyoyoyo")
       // home: ImageWidget()
       // home: FocusTestRoute()
-      home: FormTestRoute()
+      // home: FormTestRoute()
+      // home: IndicatorRoute()
+      home: ProgressRoute()
+    );
+  }
+}
+
+class IndicatorRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      child: Center(
+        // child: CupertinoActivityIndicator(),
+        child: LinearProgressIndicator(
+          backgroundColor: Colors.grey[200],
+          valueColor: AlwaysStoppedAnimation(Colors.teal),
+        ),
+      ),
+    );
+  }
+}
+
+class Example {
+  // 注意，在函数声明中，[] 是可选的意思， 不是指列表类型
+  // [] 在表达式中指的是列表类型
+  Example([String s]);
+  Example.alt(List<String> l);
+}
+
+abstract class Event {
+  void run();
+}
+
+class _AnonymousEvent implements Event {
+  _AnonymousEvent({Function run}): _run = run;
+  final void Function() _run;
+
+  @override
+  void run() => _run();
+}
+
+class ProgressRoute extends StatefulWidget {
+  @override
+  _ProgressRouteState createState() => _ProgressRouteState();
+}
+
+class _ProgressRouteState extends State<ProgressRoute>
+    with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    //动画执行时间3秒
+    _animationController =
+    new AnimationController(vsync: this, duration: Duration(seconds: 3));
+    _animationController.forward();
+    _animationController.addListener(() => setState(() => {}));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: LinearProgressIndicator(
+          backgroundColor: Colors.grey[200],
+          valueColor: ColorTween(begin: Colors.grey, end: Colors.blue)
+              .animate(_animationController), // 从灰色变成蓝色
+          value: _animationController.value,
+        ),
+      ),
     );
   }
 }
