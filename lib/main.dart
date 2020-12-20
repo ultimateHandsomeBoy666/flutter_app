@@ -36,20 +36,175 @@ class MyApp extends StatelessWidget {
           return new TapboxA();
         });
       },
-      // home: new FindAncestorRoute(),
-      // home: new CounterWidget(),
-      // home: new CupertinoTestRoute(),
-      // home: new ParentWidgetC()
-      home: new ButtonWidget(text : "yoyoyoyoyo")
-      // home: new ImageWidget()
+      // home: FindAncestorRoute(),
+      // home: CounterWidget(),
+      // home: CupertinoTestRoute(),
+      // home: ParentWidgetC()
+      // home: ButtonWidget(text : "yoyoyoyoyo")
+      // home: ImageWidget()
+      // home: FocusTestRoute()
+      home: FormTestRoute()
+    );
+  }
+}
+
+class FormTestRoute extends StatefulWidget {
+  @override
+  _FormTestRouteState createState() => _FormTestRouteState();
+}
+
+class _FormTestRouteState extends State<FormTestRoute> {
+  TextEditingController _unameContorller = TextEditingController();
+  TextEditingController _pwdContorller = TextEditingController();
+  GlobalKey _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Form Test"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+        child: Form(
+          key: _formKey,
+          autovalidate: true,
+          child: Column(
+            children: [
+              TextFormField(
+                autofocus: true,
+                controller: _unameContorller,
+                decoration: InputDecoration(
+                  labelText: "用户名",
+                  hintText: "用户名或邮箱",
+                  icon: Icon(Icons.person),
+                ),
+                validator: (v) {
+                  return v.trim().length > 0 ? null : "用户名不能为空";
+                },
+              ),
+              TextFormField(
+                controller: _pwdContorller,
+                decoration: InputDecoration(
+                  labelText: "密码",
+                  hintText: "您的登录密码",
+                  icon: Icon(Icons.lock),
+                ),
+                obscureText: true,
+                validator: (v) {
+                  return v.trim().length > 5 ? null : "密码不能少于6位";
+                },
+              ),
+              Padding(
+               padding: const EdgeInsets.only(top: 28.0),
+               child: Row(
+                 children: [
+                   Expanded(
+                     child: RaisedButton(
+                       padding: EdgeInsets.all(15.0),
+                       child: Text("登录"),
+                       color:Theme.of(context).primaryColor,
+                       textColor: Colors.white,
+                       onPressed: () {
+                         // 在这里不能通过 Form.of(context) 获取 state，context 不对
+                         // print(Form.of(context));
+
+                         if ((_formKey.currentState as FormState).validate()) {
+                           print("验证通过！！！");
+                         }
+                       },
+                     ),
+                   ),
+                 ],
+               ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FocusTestRoute extends StatefulWidget {
+  @override
+  _FocusTestRouteState createState() => _FocusTestRouteState();
+}
+
+class _FocusTestRouteState extends State<FocusTestRoute> {
+  FocusNode focusNode1 = FocusNode();
+  FocusNode focusNode2 = FocusNode();
+  FocusScopeNode focusScopeNode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CupertinoTextField(
+                padding: EdgeInsets.all(16.0),
+                autofocus: true,
+                focusNode: focusNode1,
+                placeholder: "sdsadsa",
+                // decoration: BoxDecoration(
+                //   gradient: LinearGradient(colors: [Colors.yellowAccent, Colors.lightGreen]),
+                // ),
+              ),
+            ),
+
+            TextField(
+              focusNode: focusNode2,
+              decoration: InputDecoration(
+                labelText: "input2",
+              ),
+            ),
+            Builder(builder: (ctx) {
+              return Column(
+                children: [
+                  RaisedButton(
+                    child: Text("移动焦点"),
+                    onPressed: () {
+                      if (null == focusScopeNode) {
+                        focusScopeNode = FocusScope.of(context);
+                      }
+                      focusScopeNode.requestFocus(focusNode2);
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text("隐藏键盘"),
+                    onPressed: () {
+                      focusNode1.unfocus();
+                      focusNode2.unfocus();
+                    },
+                  ),
+                ],
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 }
 
 class ButtonWidget extends StatelessWidget {
   final String text;
+  TextEditingController _controller = TextEditingController();
 
-  ButtonWidget({Key key, this.text}) : super(key: key);
+  ButtonWidget({Key key, this.text}) : super(key: key) {
+    _controller.addListener(() {
+      print(_controller.text);
+    });
+    _controller.text = "text!!!";
+    _controller.selection = TextSelection(
+      baseOffset: 2,
+      extentOffset: _controller.text.length,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +248,26 @@ class ButtonWidget extends StatelessWidget {
               ),
               textColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+            ),
+            TextField(
+              autofocus: true,
+              controller: _controller,
+              onChanged: (value) {
+                print("onChange: $value");
+              },
+              decoration: InputDecoration(
+                labelText: "用户名",
+                hintText: "用户名或密码",
+                prefixIcon: Icon(Icons.person)
+              ),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                labelText: "密码",
+                hintText: "您的登录密码",
+                prefixIcon: Icon(Icons.lock)
+              ),
+              obscureText: true,
             ),
           ],
         ),
