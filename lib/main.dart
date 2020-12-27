@@ -46,10 +46,113 @@ class MyApp extends StatelessWidget {
       // home: FocusTestRoute()
       // home: FormTestRoute()
       // home: IndicatorRoute()
-      home: ProgressRoute()
+      // home: ProgressRoute()
+      // home: FlexLayoutTestRoute()
+      home: WrapRoute()
     );
   }
 }
+
+class WrapRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Card(
+          child: Wrap(
+          spacing: 8.0,
+          runSpacing: 4.0,
+          alignment: WrapAlignment.start,
+          children: [
+            Chip(
+              avatar: CircleAvatar(
+                backgroundColor: Colors.yellowAccent,
+                child: Text("A"),
+              ),
+              label: Text("Alex"),
+            ),
+            Chip(
+              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('M')),
+              label: new Text('Lafayette'),
+            ),
+            Chip(
+              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('H')),
+              label: new Text('Mulligan'),
+            ),
+            Chip(
+              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('J')),
+              label: new Text('Laurens'),
+            ),
+            Chip(
+              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('J')),
+              label: new Text('Laurens'),
+            ),
+          ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class FlexLayoutTestRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Flex(
+          direction: Axis.horizontal,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                height: 30.0,
+                color: Colors.red,
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Container(
+                height: 30.0,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: SizedBox(
+            height: 100.0,
+            child: Flex(
+              direction: Axis.vertical,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    height: 30.0,
+                    color: Colors.red,
+                  ),
+                ),
+                Spacer(
+                  flex: 1,
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    height: 30.0,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 
 class IndicatorRoute extends StatelessWidget {
   @override
