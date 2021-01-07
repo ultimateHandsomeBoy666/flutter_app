@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       initialRoute: "/",
       theme: ThemeData(
-        primarySwatch: Colors.yellow,
+        primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // register route table
@@ -25,7 +25,6 @@ class MyApp extends StatelessWidget {
         "new_page": (context) => NewRoute(),
         "tip_route": (context) => TipRoute(text: "!SDAS",),
         // "/": (context) => MyHomePage(title: "home page"),
-        // "/": (context) => MyHomePage(title: "Home"),
       },
       // onGenerateRoute 路由生成钩子,对于没有在 routes 中定义的 route，会走此方法
       onGenerateRoute: (settings) {
@@ -49,10 +48,30 @@ class MyApp extends StatelessWidget {
       // home: ProgressRoute()
       // home: FlexLayoutTestRoute()
       // home: WrapRoute()
-      home: ContainerRoute()
+      // home: ContainerRoute()
+      home: SingleChildScrollViewTestRoute()
     );
   }
 }
+
+class SingleChildScrollViewTestRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    String str = "QWERTYUIOPASDFGHJKLZXCMX,CNAKSD";
+    return Scrollbar(
+      child: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: str.split("")
+                .map((c) => Text(c, textScaleFactor: 2.0,))
+                .toList(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 class ContainerRoute extends StatelessWidget {
   @override
