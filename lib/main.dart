@@ -48,10 +48,45 @@ class MyApp extends StatelessWidget {
       // home: IndicatorRoute()
       // home: ProgressRoute()
       // home: FlexLayoutTestRoute()
-      home: WrapRoute()
+      // home: WrapRoute()
+      home: ContainerRoute()
     );
   }
 }
+
+class ContainerRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Container(
+          constraints: BoxConstraints.tightFor(width: 200.0, height: 150.0),
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              center: Alignment.topLeft,
+              radius: 2.0,
+              colors: [Colors.red, Colors.orange],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black54,
+                offset: Offset(2.0, 2.0),
+                blurRadius: 4.0,
+              ),
+            ],
+            borderRadius: BorderRadius.circular(24.0),
+          ),
+          transform: Matrix4.rotationZ(0.2),
+          alignment: Alignment.center,
+          child: Text(
+            "5.20",
+            style: TextStyle(color: Colors.white, fontSize: 14.0),
+          ),
+        ),
+    );
+
+  }
+}
+
 
 class WrapRoute extends StatelessWidget {
   @override
