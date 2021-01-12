@@ -49,7 +49,27 @@ class MyApp extends StatelessWidget {
       // home: FlexLayoutTestRoute()
       // home: WrapRoute()
       // home: ContainerRoute()
-      home: SingleChildScrollViewTestRoute()
+      // home: SingleChildScrollViewTestRoute()
+      home: TestListViewRoute(),
+    );
+  }
+}
+
+
+
+class TestListViewRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ListView.builder(
+          itemCount: 100,
+          itemExtent: 50.0,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(title: Text("$index"));
+          },
+        ),
+      ),
     );
   }
 }
