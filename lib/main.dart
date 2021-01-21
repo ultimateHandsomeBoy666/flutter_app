@@ -51,7 +51,112 @@ class MyApp extends StatelessWidget {
       // home: ContainerRoute()
       // home: SingleChildScrollViewTestRoute()
       // home: TestListViewRoute(),
-      home: InfiniteListView(),
+      // home: InfiniteListView(),
+      // home: TestHeaderListViewRoute(),
+      // home: TestGridView(),
+      home: InfiniteGridView(),
+    );
+  }
+}
+
+class InfiniteGridView extends StatefulWidget {
+  @override
+  _InfiniteGridViewState createState() => _InfiniteGridViewState();
+}
+
+class _InfiniteGridViewState extends State<InfiniteGridView> {
+
+  List<IconData> _icons = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _retrieveIcons();
+  }
+
+  void _retrieveIcons() {
+    Future.delayed(Duration(milliseconds: 200)).then((e) => {
+      setState(() {
+        _icons.addAll([
+          Icons.ac_unit,
+          Icons.airport_shuttle,
+          Icons.all_inclusive,
+          Icons.beach_access,
+          Icons.cake,
+          Icons.free_breakfast
+        ]);
+      })
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("IGV")),
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 1.0,
+        ),
+        itemCount: _icons.length,
+        itemBuilder: (context, index) {
+          if (index == _icons.length - 1 && _icons.length < 200) {
+            _retrieveIcons();
+          }
+          return Icon(_icons[index]);
+        }),
+    );
+  }
+}
+
+
+class TestGridView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("GridView"),
+      ),
+      body: Center(
+        child: GridView(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1.0,
+          ),
+          children: [
+            Icon(Icons.ac_unit),
+            Icon(Icons.airport_shuttle),
+            Icon(Icons.all_inclusive),
+            Icon(Icons.beach_access),
+            Icon(Icons.cake),
+            Icon(Icons.free_breakfast)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TestHeaderListViewRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            ListTile(title: Text("商品列表"),),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 100,
+                itemExtent: 50.0,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(title: Text("$index"));
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
