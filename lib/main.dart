@@ -54,7 +54,66 @@ class MyApp extends StatelessWidget {
       // home: InfiniteListView(),
       // home: TestHeaderListViewRoute(),
       // home: TestGridView(),
-      home: InfiniteGridView(),
+      // home: InfiniteGridView(),
+      home: CustomScrollViewTestRoute(),
+    );
+  }
+}
+
+class CustomScrollViewTestRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: false,
+            expandedHeight: 250.0,
+            flexibleSpace: FlexibleSpaceBar(
+              title: const Text("Demo"),
+              background: Image.asset(
+                "./images/nightsky.jpeg",
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(8.0),
+            sliver: new SliverGrid(
+              gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
+                childAspectRatio: 4.0,
+              ),
+              delegate: new SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return new Container(
+                    alignment: Alignment.center,
+                    color: Colors.cyan[100 * (index % 9)],
+                    child: new Text("grid item"),
+                  );
+                },
+                childCount: 20,
+              ),
+            ),
+          ),
+          // List
+          new SliverFixedExtentList(
+            itemExtent: 50.0,
+            delegate: new SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return new Container(
+                  alignment: Alignment.center,
+                  color: Colors.lightBlue[100 * (index % 9)],
+                  child: new Text('list item $index'),
+                );
+              },
+              childCount: 50,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -108,7 +167,6 @@ class _InfiniteGridViewState extends State<InfiniteGridView> {
     );
   }
 }
-
 
 class TestGridView extends StatelessWidget {
   @override
