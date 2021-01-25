@@ -65,6 +65,38 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class InheritedProvider<T> extends InheritedWidget {
+  InheritedProvider({
+    @required this.data,
+    Widget child
+  }) : super(child: child);
+
+  final T data;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return true;
+  }
+}
+
+class ChangeNotifier implements Listenable {
+  List listeners = [];
+
+  @override
+  void addListener(VoidCallback listener) {
+    listeners.add(listener);
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    listeners.remove(listener);
+  }
+
+  void notifyListeners() {
+    listeners.forEach((item) => item());
+  }
+}
+
 class ShareDataWidget extends InheritedWidget {
   ShareDataWidget({
     @required this.data,
