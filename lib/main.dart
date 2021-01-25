@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
@@ -57,7 +58,113 @@ class MyApp extends StatelessWidget {
       // home: InfiniteGridView(),
       // home: CustomScrollViewTestRoute(),
       // home: ScrollControllerTestRoute(),
-      home: ScrollNotificationTestRoute(),
+      // home: ScrollNotificationTestRoute(),
+      // home: WillPopScopeTestRoute(),
+      home: InheritedWidgetTestRoute(),
+    );
+  }
+}
+
+class ShareDataWidget extends InheritedWidget {
+  ShareDataWidget({
+    @required this.data,
+    Widget child
+  }) : super(child: child);
+
+  final int data;
+
+  static ShareDataWidget of(BuildContext context) {
+    return context.getElementForInheritedWidgetOfExactType<ShareDataWidget>().widget;
+  }
+
+  @override
+  bool updateShouldNotify(ShareDataWidget oldWidget) {
+    // 只有这里返回 true，成功 notify 才会调用 didChangeDependencies
+    return oldWidget.data != data;
+  }
+}
+
+class _TestWidget extends StatefulWidget {
+  @override
+  __TestWidgetState createState() => __TestWidgetState();
+}
+
+class __TestWidgetState extends State<_TestWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Text(ShareDataWidget
+    .of(context)
+    .data
+    .toString());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print("dependencies change");
+  }
+}
+
+class InheritedWidgetTestRoute extends StatefulWidget {
+  @override
+  _InheritedWidgetTestRouteState createState() => _InheritedWidgetTestRouteState();
+}
+
+class _InheritedWidgetTestRouteState extends State<InheritedWidgetTestRoute> {
+  int count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("InheritedWidget"),),
+      body: Center(
+        child: ShareDataWidget(
+          data: count,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: _TestWidget(),
+              ),
+              RaisedButton(
+                child: Text("Increment"),
+                onPressed: () => setState(() => ++count),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class WillPopScopeTestRoute extends StatefulWidget {
+  @override
+  _WillPopScopeTestRouteState createState() => _WillPopScopeTestRouteState();
+}
+
+class _WillPopScopeTestRouteState extends State<WillPopScopeTestRoute> {
+  DateTime _lastPressedAt;
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (_lastPressedAt == null || DateTime.now().difference(_lastPressedAt) > Duration(seconds: 1)) {
+          _lastPressedAt = DateTime.now();
+          return false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        body: Container(
+          alignment: Alignment.center,
+          child: Text("1 秒内连续按两次返回键退出"),
+        ),
+      ),
     );
   }
 }
