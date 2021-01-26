@@ -63,7 +63,37 @@ class MyApp extends StatelessWidget {
       // home: InheritedWidgetTestRoute(),
       // home: ThemeTestRoute(),
       // home: FutureBuilderRoute(),
-      home: StreamBuilderRoute(),
+      // home: StreamBuilderRoute(),
+      home: PointerRoute(),
+    );
+  }
+}
+
+class PointerRoute extends StatefulWidget {
+
+  @override
+  _PointerRouteState createState() => _PointerRouteState();
+}
+
+class _PointerRouteState extends State<PointerRoute> {
+  PointerEvent _event;
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      child: Container(
+        alignment: Alignment.center,
+        color: Colors.blue,
+        width: 300.0,
+        height: 150.0,
+        child: Text(
+          _event?.toStringFull() ?? "",
+          style: TextStyle(color: Colors.white, fontSize: 12.0),
+        ),
+      ),
+      onPointerDown: (PointerDownEvent event) => setState(() => _event = event),
+      onPointerMove: (PointerMoveEvent event) => setState(() => _event = event),
+      onPointerUp: (PointerUpEvent event) => setState(() => _event = event),
     );
   }
 }
@@ -100,7 +130,6 @@ class StreamBuilderRoute extends StatelessWidget {
     );
   }
 }
-
 
 Future<String> mockNetworkData() async {
   return Future.delayed(Duration(seconds: 2), () => "我的从互联网上获取的数据");
