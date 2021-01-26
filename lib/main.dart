@@ -61,10 +61,75 @@ class MyApp extends StatelessWidget {
       // home: ScrollNotificationTestRoute(),
       // home: WillPopScopeTestRoute(),
       // home: InheritedWidgetTestRoute(),
-      home: ThemeTestRoute(),
+      // home: ThemeTestRoute(),
+      // home: FutureBuilderRoute(),
+      home: StreamBuilderRoute(),
     );
   }
 }
+
+Stream<int> counter() {
+  return Stream.periodic(Duration(seconds: 1), (i) {
+    return i;
+  });
+}
+
+class StreamBuilderRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: StreamBuilder<int>(
+          stream: counter(),
+          builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+            if (snapshot.hasError) return Text("Error: ${snapshot.error}");
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                return Text('没有Stream');
+              case ConnectionState.waiting:
+                return Text('等待数据...');
+              case ConnectionState.active:
+                return Text('active: ${snapshot.data}');
+              case ConnectionState.done:
+                return Text('Stream已关闭');
+            }
+            return null;
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+Future<String> mockNetworkData() async {
+  return Future.delayed(Duration(seconds: 2), () => "我的从互联网上获取的数据");
+}
+
+class FutureBuilderRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: FutureBuilder<String>(
+          future: mockNetworkData(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return Text("Error: ${snapshot.error}");
+              } else {
+                return Text("Contents: ${snapshot.data}");
+              }
+            } else {
+              return CircularProgressIndicator();
+            }
+          }
+        ),
+      ),
+    );
+  }
+}
+
 
 class ThemeTestRoute extends StatefulWidget {
   @override
