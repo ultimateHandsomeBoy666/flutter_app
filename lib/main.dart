@@ -64,7 +64,42 @@ class MyApp extends StatelessWidget {
       // home: ThemeTestRoute(),
       // home: FutureBuilderRoute(),
       // home: StreamBuilderRoute(),
-      home: PointerRoute(),
+      // home: PointerRoute(),
+      home: PointerTranslucentRoute(),
+    );
+  }
+}
+
+class PointerTranslucentRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Stack(
+          children: [
+            Listener(
+              child: ConstrainedBox(
+                constraints: BoxConstraints.tight(Size(300.0, 200.0)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.blue),
+                ),
+              ),
+              onPointerDown: (event) => print("down0"),
+            ),
+            Listener(
+              child: ConstrainedBox(
+                constraints: BoxConstraints.tight(Size(200.0, 100.0)),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(color: Colors.grey),
+                  child: Center(child: Text("左上角 200 * 100 区域非文本点击区域"),),
+                ),
+              ),
+              onPointerDown: (event) => print("down1"),
+              behavior: HitTestBehavior.opaque,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
