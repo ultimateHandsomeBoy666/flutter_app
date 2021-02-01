@@ -65,10 +65,89 @@ class MyApp extends StatelessWidget {
       // home: FutureBuilderRoute(),
       // home: StreamBuilderRoute(),
       // home: PointerRoute(),
-      home: PointerTranslucentRoute(),
+      // home: PointerTranslucentRoute(),
+      // home: GestureDetectorTestRoute(),
+      home: _Drag(),
     );
   }
 }
+
+class _Drag extends StatefulWidget {
+  @override
+  __DragState createState() => __DragState();
+}
+
+class __DragState extends State<_Drag> {
+  double _top = 0.0;
+  double _left = 0.0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Drag"),),
+      body: Stack(
+        children: [
+          Positioned(
+            top: _top,
+            left: _left,
+            child: GestureDetector(
+              child: CircleAvatar(child: Text("A"),),
+              onPanDown: (DragDownDetails e) {
+                print("用户手指按下： ${e.globalPosition}");
+              },
+              onPanUpdate: (DragUpdateDetails e) {
+                setState(() {
+                  _left += e.delta.dx;
+                  _top += e.delta.dy;
+                });
+              },
+              onPanEnd: (DragEndDetails e) {
+                print(e.velocity);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class GestureDetectorTestRoute extends StatefulWidget {
+  @override
+  _GestureDetectorTestRouteState createState() => _GestureDetectorTestRouteState();
+}
+
+class _GestureDetectorTestRouteState extends State<GestureDetectorTestRoute> {
+  String _operation = "No Gesture detected!";
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("GestureDetector"),),
+      body: Center(
+        child: GestureDetector(
+          child: Container(
+            alignment: Alignment.center,
+            color: Colors.blue,
+            width: 200.0,
+            height: 100.0,
+            child: Text(_operation,
+              style: TextStyle(color: Colors.white),),
+          ),
+          onTap: () => updateText("Tap"),
+          onDoubleTap: () => updateText("DoubleTap"),
+          onLongPress: () => updateText("LongPress"),
+        ),
+      ),
+    );
+  }
+  
+  void updateText(String text) {
+    setState(() {
+      _operation = text;
+    });
+  }
+}
+
 
 class PointerTranslucentRoute extends StatelessWidget {
   @override
