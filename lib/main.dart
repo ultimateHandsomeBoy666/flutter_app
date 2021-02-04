@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/rendering.dart';
@@ -67,10 +68,257 @@ class MyApp extends StatelessWidget {
       // home: PointerRoute(),
       // home: PointerTranslucentRoute(),
       // home: GestureDetectorTestRoute(),
-      home: _Drag(),
+      // home: _Drag(),
+      // home: _DragVertical(),
+      // home: _ScaleTestRoute(),
+      // home: _GestureRecognizer(),
+      // home: BothDirectionTestRoute(),
+      // home: GestureConflictTestRoute(),
+      home: ListenerNoConflictRoute(),
     );
   }
 }
+
+class ListenerNoConflictRoute extends StatefulWidget {
+  @override
+  _ListenerNoConflictRouteState createState() => _ListenerNoConflictRouteState();
+}
+
+class _ListenerNoConflictRouteState extends State<ListenerNoConflictRoute> {
+  double _left = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("ListenerNoConflictRoute")),
+      body: Stack(
+        children: [
+          Positioned(
+            top: 80.0,
+            left: _left,
+            child: Listener(
+              onPointerDown: (details) {
+                print("down");
+              },
+              onPointerUp: (details) {
+                print("up");
+              },
+              child: GestureDetector(
+                child: CircleAvatar(child: Text("B"),),
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    _left += details.delta.dx;
+                  });
+                },
+                onHorizontalDragEnd: (details) {
+                  print("onHorizontalDragEnd");
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+// 手势识别会有冲突，遇到冲突可以识别原始 Pointer 事件
+class GestureConflictTestRoute extends StatefulWidget {
+  @override
+  _GestureConflictTestRouteState createState() => _GestureConflictTestRouteState();
+}
+
+class _GestureConflictTestRouteState extends State<GestureConflictTestRoute> {
+  double _left = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("GestureConflictTestRoute"),),
+      body: Center(
+        child: Stack(
+          children: [
+            Positioned(
+              left: _left,
+              child: GestureDetector(
+                child: CircleAvatar(child: Text("A"),),
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    _left += details.delta.dx;
+                  });
+                },
+                onHorizontalDragEnd: (details) {
+                  print("onHorizontalDragEnd");
+                },
+                onTapDown: (details) {
+                  print("down");
+                },
+                onTapUp: (details) {
+                  print("up");
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class BothDirectionTestRoute extends StatefulWidget {
+  @override
+  _BothDirectionTestRouteState createState() => _BothDirectionTestRouteState();
+}
+
+class _BothDirectionTestRouteState extends State<BothDirectionTestRoute> {
+  double _top = 0.0;
+  double _left = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("BothDirection"),),
+      body: Center(
+        child: Stack(
+          children: [
+            Positioned(
+              top: _top,
+              left: _left,
+              child: GestureDetector(
+                child: CircleAvatar(child: Text("A")),
+                // onPanUpdate: (details) {
+                //   setState(() {
+                //     _top += details.delta.dy;
+                //     _left += details.delta.dx;
+                //   });
+                // },
+                onVerticalDragUpdate: (details) {
+                  setState(() {
+                    _top += details.delta.dy;
+                  });
+                },
+                onHorizontalDragUpdate: (details) {
+                  setState(() {
+                    _left += details.delta.dx;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GestureRecognizer extends StatefulWidget {
+  @override
+  __GestureRecognizerState createState() => __GestureRecognizerState();
+}
+
+class __GestureRecognizerState extends State<_GestureRecognizer> {
+  TapGestureRecognizer _tapGestureRecognizer = new TapGestureRecognizer();
+  bool _toggle = false;
+
+  @override
+  void dispose() {
+    // 用到 GestureRecognizer 一定要调用 dispose 释放资源
+    _tapGestureRecognizer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _tapGestureRecognizer.onTap = () {
+      setState(() {
+        _toggle = !_toggle;
+      });
+    };
+    return Scaffold(
+      appBar: AppBar(title: Text("GestureRecognizer"),),
+      body: Center(
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(text: "你好世界"),
+              TextSpan(
+                text: "点我变色",
+                style: TextStyle(
+                  fontSize: 30.0,
+                  color: _toggle ? Colors.blue : Colors.red
+                ),
+                recognizer: _tapGestureRecognizer,
+              ),
+              TextSpan(text: "你好世界"),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class _ScaleTestRoute extends StatefulWidget {
+  @override
+  __ScaleTestRouteState createState() => __ScaleTestRouteState();
+}
+
+class __ScaleTestRouteState extends State<_ScaleTestRoute> {
+  double _width = 200.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Scale"),),
+      body: Center(
+        child: GestureDetector(
+          child: Image.asset("./images/nightsky.jpeg", width: _width,),
+          onScaleUpdate: (details) {
+            setState(() {
+              _width = 200.0 * details.scale.clamp(0.8, 20.0);
+            });
+          },
+        )
+      ),
+    );
+  }
+}
+
+
+class _DragVertical extends StatefulWidget {
+  @override
+  __DragVerticalState createState() => __DragVerticalState();
+}
+
+class __DragVerticalState extends State<_DragVertical> {
+  double _top = 0.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("DragVertical"),),
+      body: Stack(
+        children: [
+          Positioned(
+            top: _top,
+            child: GestureDetector(
+              child: CircleAvatar(child: Text("A")),
+              onVerticalDragUpdate: (details) {
+                setState(() {
+                  _top += details.delta.dy;
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 class _Drag extends StatefulWidget {
   @override
