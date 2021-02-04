@@ -76,6 +76,7 @@ class MyApp extends StatelessWidget {
       // home: BothDirectionTestRoute(),
       // home: GestureConflictTestRoute(),
       // home: ListenerNoConflictRoute(),
+      // home: NotificationRoute(),
       home: ScaleAnimationRoute1(),
     );
   }
@@ -153,6 +154,53 @@ class _ScaleAnimationRoute1State extends State<ScaleAnimationRoute1>
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+}
+
+class MyNotification extends Notification {
+  MyNotification(this.msg);
+  final String msg;
+}
+
+class NotificationRoute extends StatefulWidget {
+  @override
+  _NotificationRouteState createState() => _NotificationRouteState();
+}
+
+class _NotificationRouteState extends State<NotificationRoute> {
+  String _msg = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<MyNotification>(
+      onNotification: (notification) {
+        setState(() {
+          _msg += notification.msg + " ";
+        });
+        return true;
+      },
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 这个不起作用，因为 context 是 widget 树的根 context
+            RaisedButton(
+            onPressed: () => MyNotification("Hi").dispatch(context),
+            child: Text("Send Notification"),
+           ),
+            Builder(
+              builder: (context) {
+                return RaisedButton(
+                  onPressed: () => MyNotification("Hi").dispatch(context),
+                  child: Text("send notification"),
+                );
+              },
+            ),
+            Text(_msg),
+          ],
+        ),
+      ),
+    );
   }
 }
 
