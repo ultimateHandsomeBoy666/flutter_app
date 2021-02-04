@@ -75,10 +75,87 @@ class MyApp extends StatelessWidget {
       // home: _GestureRecognizer(),
       // home: BothDirectionTestRoute(),
       // home: GestureConflictTestRoute(),
-      home: ListenerNoConflictRoute(),
+      // home: ListenerNoConflictRoute(),
+      home: ScaleAnimationRoute1(),
     );
   }
 }
+
+class GrowTransition extends StatelessWidget {
+  GrowTransition({this.child, this.animation});
+
+  final Widget child;
+  final Animation<double> animation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (BuildContext context, Widget child) {
+          return Container(
+            height: animation.value,
+            width: animation.value,
+            child: child,
+          );
+        },
+        child: child,
+      ),
+    );
+  }
+}
+
+
+class AnimatedImage extends AnimatedWidget {
+  AnimatedImage({Key key, Animation<double> animation}) : super(key: key, listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+    // final Animation<double> animation = listenable;
+    return Center(
+      child: Image.asset("./images/nightsky.jpeg",
+        width: (listenable as Animation<double>).value,
+        height: (listenable as Animation<double>).value,
+      ),
+    );
+  }
+}
+
+class ScaleAnimationRoute1 extends StatefulWidget {
+  @override
+  _ScaleAnimationRoute1State createState() => _ScaleAnimationRoute1State();
+}
+
+class _ScaleAnimationRoute1State extends State<ScaleAnimationRoute1>
+  with SingleTickerProviderStateMixin {
+
+  Animation<double> animation;
+  AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: const Duration(seconds: 3), vsync: this,
+    );
+    animation = Tween(begin: 0.0, end: 300.0).animate(controller);
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedImage(
+      animation: animation,
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+}
+
 
 class ListenerNoConflictRoute extends StatefulWidget {
   @override
