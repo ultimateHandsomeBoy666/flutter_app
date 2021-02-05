@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       initialRoute: "/",
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // register route table
@@ -33,9 +33,6 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (settings) {
         return MaterialPageRoute(builder: (context) {
           String routeName = settings.name;
-          // switch (routeName) {
-          //   case:
-          // }
           return new TapboxA();
         });
       },
@@ -79,10 +76,57 @@ class MyApp extends StatelessWidget {
       // home: NotificationRoute(),
       // home: ScaleAnimationRoute(),
       // home: ScaleAnimationRoute1(),
-      home: AnimateBuilderRoute(),
+      // home: AnimateBuilderRoute(),
+      home: Route1(),
     );
   }
 }
+
+class Route1 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Route1"),),
+      body: Center(
+        child: CupertinoButton(
+          color: Colors.blue,
+          child: Text("to Route2 ->"),
+          onPressed: () {
+            Navigator.push(context, CupertinoPageRoute(
+              builder: (context) => Route2()
+            ));
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class Route2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Route2"),),
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Container(
+          width: double.infinity,
+          child: CupertinoButton(
+            color: Colors.blue,
+            child: Text("<- back"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 class GrowTransition extends StatelessWidget {
   GrowTransition({this.child, this.animation});
