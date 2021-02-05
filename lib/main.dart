@@ -92,9 +92,18 @@ class Route1 extends StatelessWidget {
           color: Colors.blue,
           child: Text("to Route2 ->"),
           onPressed: () {
-            Navigator.push(context, CupertinoPageRoute(
-              builder: (context) => Route2()
-            ));
+            Navigator.push(
+              context,
+              PageRouteBuilder(
+                transitionDuration: Duration(milliseconds: 500),
+                pageBuilder: (context, animation, secondaryAnimation) {
+                  return RotationTransition(
+                    turns: animation,
+                    child: Route2(),
+                  );
+                },
+              ),
+            );
           },
         ),
       ),
