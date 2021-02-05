@@ -77,7 +77,9 @@ class MyApp extends StatelessWidget {
       // home: GestureConflictTestRoute(),
       // home: ListenerNoConflictRoute(),
       // home: NotificationRoute(),
-      home: ScaleAnimationRoute1(),
+      // home: ScaleAnimationRoute(),
+      // home: ScaleAnimationRoute1(),
+      home: AnimateBuilderRoute(),
     );
   }
 }
@@ -105,6 +107,43 @@ class GrowTransition extends StatelessWidget {
     );
   }
 }
+
+class AnimateBuilderRoute extends StatefulWidget {
+  @override
+  _AnimateBuilderRouteState createState() => _AnimateBuilderRouteState();
+}
+
+class _AnimateBuilderRouteState extends State<AnimateBuilderRoute>
+ with SingleTickerProviderStateMixin {
+
+  Animation<double> animation;
+  AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: const Duration(seconds: 3), vsync: this,
+    );
+    animation = Tween(begin: 0.0, end: 300.0).animate(controller);
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GrowTransition(
+      child: Image.asset("./images/nightsky.jpeg"),
+      animation: animation,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+}
+
 
 
 class AnimatedImage extends AnimatedWidget {
@@ -156,6 +195,42 @@ class _ScaleAnimationRoute1State extends State<ScaleAnimationRoute1>
     super.dispose();
   }
 }
+
+class ScaleAnimationRoute extends StatefulWidget {
+@override
+  _ScaleAnimationRouteState createState() => _ScaleAnimationRouteState();
+}
+
+class _ScaleAnimationRouteState extends State<ScaleAnimationRoute>
+    with SingleTickerProviderStateMixin {
+
+  Animation<double> animation;
+  AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = new AnimationController(
+        duration: const Duration(seconds: 3), vsync: this);
+    animation = new Tween(begin: 0.0, end: 300.0).animate(controller)
+      ..addListener(() {
+        setState(() {
+        });
+      });
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Image.asset("./images/nightsky.jpeg",
+        width: animation.value,
+        height: animation.value
+      ),
+    );
+  }
+}
+
 
 class MyNotification extends Notification {
   MyNotification(this.msg);
