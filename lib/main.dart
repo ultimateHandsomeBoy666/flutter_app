@@ -79,7 +79,61 @@ class MyApp extends StatelessWidget {
       // home: AnimateBuilderRoute(),
       // home: Route1(),
       // home: StaggerRoute(),
+      // home: HeroAnimationRoute(),
       home: AnimatedSwitcherCounterRoute(),
+    );
+  }
+}
+
+class HeroAnimationRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Hero"),),
+      body: Container(
+        alignment: Alignment.topCenter,
+        child: InkWell(
+            child: Hero(
+              tag: "avatar",
+              child: ClipOval(
+                child: Image.asset("./images/nightsky.jpeg", width: 50.0,),
+              ),
+            ),
+            onTap: () {
+              // Navigator.push(context, PageRouteBuilder(
+              //   pageBuilder: (context, animation, secAnimation) {
+              //     return FadeTransition(
+              //       opacity: animation,
+              //       child: Scaffold(
+              //         appBar: AppBar(title: Text("原图")),
+              //         body: HeroAnimationRouteB(),
+              //       ),
+              //     );
+              //   },
+              // ));
+              Navigator.push(context, CupertinoPageRoute(
+                builder: (context) {
+                  return Scaffold(
+                    appBar: AppBar(title: Text("原图")),
+                    body: HeroAnimationRouteB(),
+                  );
+                },
+              ));
+            },
+        ),
+      ),
+    );
+  }
+}
+
+class HeroAnimationRouteB extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Hero(
+        tag: "avatar",
+        child: Image.asset("./images/nightsky.jpeg"),
+      ),
     );
   }
 }
@@ -104,14 +158,17 @@ class _AnimatedSwitcherCounterRouteState extends State<AnimatedSwitcherCounterRo
               duration: const Duration(milliseconds: 500),
               transitionBuilder: (Widget child, Animation<double> animation) {
                 return ScaleTransition(
-                  child: child,
-                  scale: animation);
+                    child: child,
+                    scale: animation);
               },
               child: Text(
                 "$_count",
                 //显示指定key，不同的key会被认为是不同的Text，这样才能执行动画
                 key: ValueKey<int>(_count),
-                style: Theme.of(context).textTheme.headline4,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .headline4,
               ),
             ),
             RaisedButton(
@@ -128,6 +185,7 @@ class _AnimatedSwitcherCounterRouteState extends State<AnimatedSwitcherCounterRo
     );
   }
 }
+
 
 
 class StaggerRoute extends StatefulWidget {
@@ -254,7 +312,6 @@ class StaggerAnimation extends StatelessWidget {
     );
   }
 }
-
 
 class FadeRoute extends PageRoute {
 
