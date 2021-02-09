@@ -80,10 +80,55 @@ class MyApp extends StatelessWidget {
       // home: Route1(),
       // home: StaggerRoute(),
       // home: HeroAnimationRoute(),
-      home: AnimatedSwitcherCounterRoute(),
+      // home: AnimatedSwitcherCounterRoute(),
+      // home: AnimatedSwitcherCounterRoute(),
+      home: AnimatedDecoratedBoxRoute(),
     );
   }
 }
+
+class AnimatedDecorBox extends ImplicitlyAnimatedWidget {
+  AnimatedDecorBox({
+    Key key,
+    @required this.decoration,
+    this.child,
+    Curve curve = Curves.linear,
+    @required Duration duration,
+    Duration reverseDuration,
+}) : super(
+    key: key,
+    curve: curve,
+    duration: duration,
+  );
+
+  final BoxDecoration decoration;
+  final Widget child;
+
+  @override
+  _AnimatedDecoratedBoxState createState() {
+    return _AnimatedDecoratedBoxState();
+  }
+}
+
+class _AnimatedDecoratedBoxState extends AnimatedWidgetBaseState<AnimatedDecorBox> {
+
+  DecorationTween _decorationTween;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: _decorationTween.evaluate(animation),
+      child: widget.child,
+    );
+  }
+
+  @override
+  void forEachTween(visitor) {
+    _decorationTween = visitor(_decorationTween, widget.decoration,
+            (value) => DecorationTween(begin: value));
+  }
+}
+
 
 class HeroAnimationRoute extends StatelessWidget {
   @override
@@ -146,8 +191,8 @@ class SlideTransitionX extends AnimatedWidget {
     this.transformHitTests = true,
     this.direction = AxisDirection.down,
     this.child,
-}) : assert(position != null),
-  super(key: key, listenable:  position) {
+  }) : assert(position != null),
+        super(key: key, listenable:  position) {
     // 偏移在内部处理
     switch (direction) {
       case AxisDirection.up:
@@ -205,13 +250,13 @@ class MySlideTransition extends AnimatedWidget {
     @required Animation<Offset> position,
     this.transformHitTests = true,
     this.child,
-}) : assert(position != null),
-  super(key : key, listenable: position);
-  
+  }) : assert(position != null),
+        super(key : key, listenable: position);
+
   Animation<Offset> get position => listenable;
   final bool transformHitTests;
   final Widget child;
-  
+
   @override
   Widget build(BuildContext context) {
     Offset offset = position.value;
@@ -225,6 +270,131 @@ class MySlideTransition extends AnimatedWidget {
     );
   }
 }
+
+class AnimatedDecoratedBoxRoute extends StatefulWidget {
+  @override
+  _AnimatedDecoratedBoxRouteState createState() => _AnimatedDecoratedBoxRouteState();
+}
+
+class _AnimatedDecoratedBoxRouteState extends State<AnimatedDecoratedBoxRoute> {
+  Color _decorationColor = Colors.blue;
+  var duration = Duration(seconds: 1);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("AnimatedDecoratedBoxRoute"),),
+      body: Center(
+        child: AnimatedDecorBox(
+          duration: duration,
+          decoration: BoxDecoration(color: _decorationColor),
+          child: FlatButton(
+            onPressed: () {
+              setState(() {
+                _decorationColor = Colors.red;
+              });
+            },
+            child: Text("AnimatedDecorBox",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedDecoratedBox1 extends StatefulWidget {
+
+  AnimatedDecoratedBox1({
+    Key key,
+    @required this.decoration,
+    this.child,
+    this.curve = Curves.linear,
+    @required this.duration,
+    this.reverseDuration,
+});
+
+  final BoxDecoration decoration;
+  final Widget child;
+  final Duration duration;
+  final Curve curve;
+  final Duration reverseDuration;
+
+  @override
+  _AnimatedDecoratedBox1State createState() => _AnimatedDecoratedBox1State();
+}
+
+class _AnimatedDecoratedBox1State extends State<AnimatedDecoratedBox1> with SingleTickerProviderStateMixin{
+
+  @protected
+  AnimationController get controller => _controller;
+  AnimationController _controller;
+
+  Animation<double> get animation => _animation;
+  Animation<double> _animation;
+
+  DecorationTween _tween;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: widget.duration,
+      reverseDuration: widget.reverseDuration,
+      vsync: this,
+    );
+    _tween = DecorationTween(begin: widget.decoration);
+    _updateCurve();
+  }
+
+  void _updateCurve() {
+    if (widget.curve != null) {
+      _animation = CurvedAnimation(parent: _controller, curve: widget.curve);
+    } else {
+      _animation = _controller;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AnimatedDecoratedBox1 oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.curve != oldWidget.curve) {
+      _updateCurve();
+    }
+    _controller.duration = widget.duration;
+    _controller.reverseDuration = widget.reverseDuration;
+    if (widget.decoration != (_tween.end ?? _tween.begin)) {
+      _tween
+        ..begin = _tween.evaluate(_animation)
+        ..end = widget.decoration;
+      _controller
+        ..value = 0.0
+        ..forward();
+    }
+
+    @override
+    void dispose() {
+      super.dispose();
+      _controller.dispose();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+        animation: _animation,
+        child: widget.child,
+        builder: (context, child) {
+          return DecoratedBox(
+            decoration: _tween.animate(_animation).value,
+            child: child,
+          );
+        });
+  }
+}
+
+
 
 class AnimatedSwitcherCounterRoute extends StatefulWidget {
   @override
@@ -1217,6 +1387,8 @@ class InheritedProvider<T> extends InheritedWidget {
     return true;
   }
 }
+
+typedef VoidCallback = void Function();
 
 class ChangeNotifier implements Listenable {
   List listeners = [];
