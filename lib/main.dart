@@ -88,10 +88,151 @@ class MyApp extends StatelessWidget {
       // home: AnimatedWidgetTestRoute(),
       // home: FileOperationRoute(),
       // home: HttpTestRoute(),
-      home: FutureBuilderRoute1(),
+      // home: FutureBuilderRoute1(),
+      home: ChunkDownloadRoute(),
     );
   }
 }
+
+class ChunkDownloadRoute extends StatefulWidget { 
+  
+  @override
+  ChunkDownloadState createState() {
+    return ChunkDownloadState();
+  }
+  
+}
+
+class ChunkDownloadState extends State<ChunkDownloadRoute> {
+
+  String _url = "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe";
+
+  double _progress = 0;
+
+  Future<String> _getLocalFileDir() async {
+    String dir = (await getApplicationDocumentsDirectory()).path;
+    print("dir = $dir");
+    return dir;
+  }
+
+  downloadWithChunks(url,
+      {ProgressCallback onReceiveProgress,}) async {
+    const firstChunkSize = 102;
+    const maxChunk = 3;
+
+    int total = 0;
+    var dio = Dio();
+    var progress = <int>[];
+
+    // async 和 await 是可以嵌套的
+    // 这里就嵌套了好几层
+    String savePath = await _getLocalFileDir();
+
+    // 这里函数没有明确写明返回类型，会被判断为 dynamic 类型。如果没有返回值，则会被隐式地添加 return null；
+    func(no) {
+      return (int received, _) {
+        progress[no] = received;
+        if (onReceiveProgress != null && total != 0) {
+          onReceiveProgress(progress.reduce((a, b) => a + b), total);
+        }
+      };
+    }
+
+    Future<Response> downloadChunk(url, start, end, no) async {
+      progress.add(0);
+      --end;
+      return dio.download(
+        url,
+        savePath + "temp$no",
+        onReceiveProgress: func(no),
+        options: Options(
+          headers: {"range": "bytes=$start-$end"},
+        ),
+      );
+    }
+
+    Future mergeTempFiles(chunk) async {
+      File f = File(savePath + "temp0");
+      IOSink ioSink = f.openWrite(mode: FileMode.writeOnlyAppend);
+      for (int i = 1; i < chunk; ++i) {
+        File _f = File(savePath + "temp$i");
+        await ioSink.addStream(_f.openRead());
+        await _f.delete();
+      }
+      await ioSink.close();
+      await f.rename(savePath + "YEEE");
+    }
+
+    Response response = await downloadChunk(url, 0, firstChunkSize, 0);
+    if (response.statusCode == 206) {
+      total = int.parse(response.headers
+          .value(HttpHeaders.contentRangeHeader)
+          .split("/")
+          .last);
+      int reserved = total -
+          int.parse(response.headers.value(HttpHeaders.contentLengthHeader));
+      int chunk = (reserved / firstChunkSize).ceil() + 1;
+      if (chunk > 1) {
+        int chunkSize = firstChunkSize;
+        if (chunk > maxChunk + 1) {
+          chunk = maxChunk + 1;
+          chunkSize = (reserved / maxChunk).ceil();
+        }
+        var futures = <Future>[];
+        for (int i = 0; i < maxChunk; ++i) {
+          int start = firstChunkSize + i * chunkSize;
+          futures.add(downloadChunk(url, start, start + chunkSize, i + 1));
+        }
+        await Future.wait(futures);
+      }
+      await mergeTempFiles(chunk);
+    }
+  }
+
+  Future _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = downloadWithChunks(_url, onReceiveProgress: (received, total) {
+      setState(() {
+        _progress = received / total;
+      });
+      // print("progress = ${received / total}");
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      appBar: AppBar(title: Text("chunkDownloadRoute"),),
+      body: Center(
+        child: FutureBuilder(
+          future: _future,
+          builder: (context, snapshot) {
+            print("state = ${snapshot.connectionState}");
+            if (snapshot.hasError) {
+              print("connect error: ${snapshot.error}");
+              return Text("Woops! connect failed");
+            }
+            if (snapshot.connectionState == ConnectionState.done) {
+              return CircularProgressIndicator(
+                value: 100.0,
+              );
+            } else {
+              return CircularProgressIndicator(
+                value: _progress,
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
 
 class FutureBuilderRoute1 extends StatefulWidget {
   @override
