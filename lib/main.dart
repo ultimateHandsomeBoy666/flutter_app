@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
@@ -10,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:core';
-import 'package:flutter_app/event_bus.dart';
+import 'package:dio/dio.dart';
 
 void main() {
   runApp(MyApp());
@@ -88,10 +87,47 @@ class MyApp extends StatelessWidget {
       // home: AnimatedDecoratedBoxRoute(),
       // home: AnimatedWidgetTestRoute(),
       // home: FileOperationRoute(),
-      home: HttpTestRoute(),
+      // home: HttpTestRoute(),
+      home: FutureBuilderRoute1(),
     );
   }
 }
+
+class FutureBuilderRoute1 extends StatefulWidget {
+  @override
+  _FutureBuilderRoute1State createState() => _FutureBuilderRoute1State();
+}
+
+class _FutureBuilderRoute1State extends State<FutureBuilderRoute1> {
+  Dio _dio = Dio();
+  String _path = "https://api.github.com/orgs/flutterchina/repos";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("FutureBuilderRoute"),),
+      body: Center(
+        child: FutureBuilder(
+          future: _dio.get(_path),
+          builder: (context, asyncSnapShot) {
+            if (asyncSnapShot.connectionState == ConnectionState.done) {
+              Response response = asyncSnapShot.data;
+              if (asyncSnapShot.hasError) {
+                return Text(asyncSnapShot.error.toString());
+              }
+              print("data type = ${response.data.runtimeType}");
+              return ListView(
+                children: response.data.map<Widget>((e) => ListTile(title: Text(e["full_name"]))).toList(),
+              );
+            }
+            return CircularProgressIndicator();
+          },
+        ),
+      ),
+    );
+  }
+}
+
 
 class HttpTestRoute extends StatefulWidget {
   @override
@@ -120,7 +156,7 @@ class _HttpTestRouteState extends State<HttpTestRoute> {
                   });
                   try {
                     HttpClient httpclient = HttpClient();
-                    httpclient.idleTimeout = 50;
+                    httpclient.idleTimeout = Duration(seconds: 50);
                     HttpClientRequest request = await httpclient.getUrl(
                         Uri.parse("https://www.baidu.com")
                     );
