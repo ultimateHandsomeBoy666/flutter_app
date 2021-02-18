@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_app/user.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -14,6 +16,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 
 void main() {
+  debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   runApp(MyApp());
 }
 
@@ -30,7 +33,9 @@ class MyApp extends StatelessWidget {
       // register route table
       routes: {
         "new_page": (context) => NewRoute(),
-        "tip_route": (context) => TipRoute(text: "!SDAS",),
+        "tip_route": (context) => TipRoute(
+              text: "!SDAS",
+            ),
         // "/": (context) => MyHomePage(title: "home page"),
       },
       // onGenerateRoute 路由生成钩子,对于没有在 routes 中定义的 route，会走此方法
@@ -115,7 +120,9 @@ class _WebSocketRouteState extends State<WebSocketRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("webScoket"),),
+      appBar: AppBar(
+        title: Text("webScoket"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -166,19 +173,14 @@ class _WebSocketRouteState extends State<WebSocketRoute> {
   }
 }
 
-
-
-class ChunkDownloadRoute extends StatefulWidget { 
-  
+class ChunkDownloadRoute extends StatefulWidget {
   @override
   ChunkDownloadState createState() {
     return ChunkDownloadState();
   }
-  
 }
 
 class ChunkDownloadState extends State<ChunkDownloadRoute> {
-
   String _url = "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe";
 
   double _progress = 0;
@@ -189,8 +191,10 @@ class ChunkDownloadState extends State<ChunkDownloadRoute> {
     return dir;
   }
 
-  downloadWithChunks(url,
-      {ProgressCallback onReceiveProgress,}) async {
+  downloadWithChunks(
+    url, {
+    ProgressCallback onReceiveProgress,
+  }) async {
     const firstChunkSize = 102;
     const maxChunk = 3;
 
@@ -278,9 +282,10 @@ class ChunkDownloadState extends State<ChunkDownloadRoute> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(title: Text("chunkDownloadRoute"),),
+      appBar: AppBar(
+        title: Text("chunkDownloadRoute"),
+      ),
       body: Center(
         child: FutureBuilder(
           future: _future,
@@ -306,8 +311,6 @@ class ChunkDownloadState extends State<ChunkDownloadRoute> {
   }
 }
 
-
-
 class FutureBuilderRoute1 extends StatefulWidget {
   @override
   _FutureBuilderRoute1State createState() => _FutureBuilderRoute1State();
@@ -320,7 +323,9 @@ class _FutureBuilderRoute1State extends State<FutureBuilderRoute1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("FutureBuilderRoute"),),
+      appBar: AppBar(
+        title: Text("FutureBuilderRoute"),
+      ),
       body: Center(
         child: FutureBuilder(
           future: _dio.get(_path),
@@ -332,7 +337,9 @@ class _FutureBuilderRoute1State extends State<FutureBuilderRoute1> {
               }
               print("data type = ${response.data.runtimeType}");
               return ListView(
-                children: response.data.map<Widget>((e) => ListTile(title: Text(e["full_name"]))).toList(),
+                children: response.data
+                    .map<Widget>((e) => ListTile(title: Text(e["full_name"])))
+                    .toList(),
               );
             }
             return CircularProgressIndicator();
@@ -342,7 +349,6 @@ class _FutureBuilderRoute1State extends State<FutureBuilderRoute1> {
     );
   }
 }
-
 
 class HttpTestRoute extends StatefulWidget {
   @override
@@ -356,7 +362,9 @@ class _HttpTestRouteState extends State<HttpTestRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("HttpTestRoute"),),
+      appBar: AppBar(
+        title: Text("HttpTestRoute"),
+      ),
       body: ConstrainedBox(
         constraints: BoxConstraints.expand(),
         child: SingleChildScrollView(
@@ -364,36 +372,37 @@ class _HttpTestRouteState extends State<HttpTestRoute> {
             children: [
               RaisedButton(
                 child: Text("获取百度"),
-                onPressed: _loading ? null : () async {
-                  setState(() {
-                    _loading = true;
-                    _text = "正在请求。。。";
-                  });
-                  try {
-                    HttpClient httpclient = HttpClient();
-                    httpclient.idleTimeout = Duration(seconds: 50);
-                    HttpClientRequest request = await httpclient.getUrl(
-                        Uri.parse("https://www.baidu.com")
-                    );
-                    request.headers.add("user-agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1");
-                    HttpClientResponse response = await request.close();
-                    _text = await response.transform(utf8.decoder).join();
-                    print(response.headers);
+                onPressed: _loading
+                    ? null
+                    : () async {
+                        setState(() {
+                          _loading = true;
+                          _text = "正在请求。。。";
+                        });
+                        try {
+                          HttpClient httpclient = HttpClient();
+                          httpclient.idleTimeout = Duration(seconds: 50);
+                          HttpClientRequest request = await httpclient
+                              .getUrl(Uri.parse("https://www.baidu.com"));
+                          request.headers.add("user-agent",
+                              "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1");
+                          HttpClientResponse response = await request.close();
+                          _text = await response.transform(utf8.decoder).join();
+                          print(response.headers);
 
-                    httpclient.close();
-
-                  } catch (e) {
-                    _text = "请求失败: $e";
-                  } finally {
-                    setState(() {
-                      _loading = false;
-                    });
-                  }
-                },
+                          httpclient.close();
+                        } catch (e) {
+                          _text = "请求失败: $e";
+                        } finally {
+                          setState(() {
+                            _loading = false;
+                          });
+                        }
+                      },
               ),
               Container(
                 width: MediaQuery.of(context).size.width - 50.0,
-                child: Text(_text.replaceAll(RegExp(r"</title>") , "fuck")),
+                child: Text(_text.replaceAll(RegExp(r"</title>"), "fuck")),
               ),
             ],
           ),
@@ -402,7 +411,6 @@ class _HttpTestRouteState extends State<HttpTestRoute> {
     );
   }
 }
-
 
 class FileOperationRoute extends StatefulWidget {
   FileOperationRoute({Key key}) : super(key: key);
@@ -449,7 +457,9 @@ class _FileOperationRouteState extends State<FileOperationRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("文件操作"),),
+      appBar: AppBar(
+        title: Text("文件操作"),
+      ),
       body: Center(
         child: Text("点击了$_counter次"),
       ),
@@ -462,18 +472,17 @@ class _FileOperationRouteState extends State<FileOperationRoute> {
   }
 }
 
-
-
 class AnimatedWidgetTestRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("AnimatedWidgetTestRoute"),),
+      appBar: AppBar(
+        title: Text("AnimatedWidgetTestRoute"),
+      ),
       body: AnimatedWidgetTest(),
     );
   }
 }
-
 
 class AnimatedWidgetTest extends StatefulWidget {
   @override
@@ -582,8 +591,10 @@ class _AnimatedWidgetTestState extends State<AnimatedWidgetTest> {
                   _decorationColor = Colors.red;
                 });
               },
-              child: Text("AnimatedDecoratedBox",
-              style: TextStyle(color: Colors.white),),
+              child: Text(
+                "AnimatedDecoratedBox",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
         ].map((e) {
@@ -597,7 +608,6 @@ class _AnimatedWidgetTestState extends State<AnimatedWidgetTest> {
   }
 }
 
-
 class AnimatedDecorBox extends ImplicitlyAnimatedWidget {
   AnimatedDecorBox({
     Key key,
@@ -606,11 +616,11 @@ class AnimatedDecorBox extends ImplicitlyAnimatedWidget {
     Curve curve = Curves.linear,
     @required Duration duration,
     Duration reverseDuration,
-}) : super(
-    key: key,
-    curve: curve,
-    duration: duration,
-  );
+  }) : super(
+          key: key,
+          curve: curve,
+          duration: duration,
+        );
 
   final BoxDecoration decoration;
   final Widget child;
@@ -621,8 +631,8 @@ class AnimatedDecorBox extends ImplicitlyAnimatedWidget {
   }
 }
 
-class _AnimatedDecoratedBoxState extends AnimatedWidgetBaseState<AnimatedDecorBox> {
-
+class _AnimatedDecoratedBoxState
+    extends AnimatedWidgetBaseState<AnimatedDecorBox> {
   DecorationTween _decorationTween;
 
   @override
@@ -636,46 +646,50 @@ class _AnimatedDecoratedBoxState extends AnimatedWidgetBaseState<AnimatedDecorBo
   @override
   void forEachTween(visitor) {
     _decorationTween = visitor(_decorationTween, widget.decoration,
-            (value) => DecorationTween(begin: value));
+        (value) => DecorationTween(begin: value));
   }
 }
-
 
 class HeroAnimationRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Hero"),),
+      appBar: AppBar(
+        title: Text("Hero"),
+      ),
       body: Container(
         alignment: Alignment.topCenter,
         child: InkWell(
-            child: Hero(
-              tag: "avatar",
-              child: ClipOval(
-                child: Image.asset("./images/nightsky.jpeg", width: 50.0,),
+          child: Hero(
+            tag: "avatar",
+            child: ClipOval(
+              child: Image.asset(
+                "./images/nightsky.jpeg",
+                width: 50.0,
               ),
             ),
-            onTap: () {
-              // Navigator.push(context, PageRouteBuilder(
-              //   pageBuilder: (context, animation, secAnimation) {
-              //     return FadeTransition(
-              //       opacity: animation,
-              //       child: Scaffold(
-              //         appBar: AppBar(title: Text("原图")),
-              //         body: HeroAnimationRouteB(),
-              //       ),
-              //     );
-              //   },
-              // ));
-              Navigator.push(context, CupertinoPageRoute(
-                builder: (context) {
-                  return Scaffold(
-                    appBar: AppBar(title: Text("原图")),
-                    body: HeroAnimationRouteB(),
-                  );
-                },
-              ));
-            },
+          ),
+          onTap: () {
+            // Navigator.push(context, PageRouteBuilder(
+            //   pageBuilder: (context, animation, secAnimation) {
+            //     return FadeTransition(
+            //       opacity: animation,
+            //       child: Scaffold(
+            //         appBar: AppBar(title: Text("原图")),
+            //         body: HeroAnimationRouteB(),
+            //       ),
+            //     );
+            //   },
+            // ));
+            Navigator.push(context, CupertinoPageRoute(
+              builder: (context) {
+                return Scaffold(
+                  appBar: AppBar(title: Text("原图")),
+                  body: HeroAnimationRouteB(),
+                );
+              },
+            ));
+          },
         ),
       ),
     );
@@ -695,15 +709,14 @@ class HeroAnimationRouteB extends StatelessWidget {
 }
 
 class SlideTransitionX extends AnimatedWidget {
-
   SlideTransitionX({
     Key key,
     @required Animation<double> position,
     this.transformHitTests = true,
     this.direction = AxisDirection.down,
     this.child,
-  }) : assert(position != null),
-        super(key: key, listenable:  position) {
+  })  : assert(position != null),
+        super(key: key, listenable: position) {
     // 偏移在内部处理
     switch (direction) {
       case AxisDirection.up:
@@ -761,8 +774,8 @@ class MySlideTransition extends AnimatedWidget {
     @required Animation<Offset> position,
     this.transformHitTests = true,
     this.child,
-  }) : assert(position != null),
-        super(key : key, listenable: position);
+  })  : assert(position != null),
+        super(key: key, listenable: position);
 
   Animation<Offset> get position => listenable;
   final bool transformHitTests;
@@ -784,7 +797,8 @@ class MySlideTransition extends AnimatedWidget {
 
 class AnimatedDecoratedBoxRoute extends StatefulWidget {
   @override
-  _AnimatedDecoratedBoxRouteState createState() => _AnimatedDecoratedBoxRouteState();
+  _AnimatedDecoratedBoxRouteState createState() =>
+      _AnimatedDecoratedBoxRouteState();
 }
 
 class _AnimatedDecoratedBoxRouteState extends State<AnimatedDecoratedBoxRoute> {
@@ -794,7 +808,9 @@ class _AnimatedDecoratedBoxRouteState extends State<AnimatedDecoratedBoxRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("AnimatedDecoratedBoxRoute"),),
+      appBar: AppBar(
+        title: Text("AnimatedDecoratedBoxRoute"),
+      ),
       body: Center(
         child: AnimatedDecorBox(
           duration: duration,
@@ -805,7 +821,8 @@ class _AnimatedDecoratedBoxRouteState extends State<AnimatedDecoratedBoxRoute> {
                 _decorationColor = Colors.red;
               });
             },
-            child: Text("AnimatedDecorBox",
+            child: Text(
+              "AnimatedDecorBox",
               style: TextStyle(color: Colors.white),
             ),
           ),
@@ -816,7 +833,6 @@ class _AnimatedDecoratedBoxRouteState extends State<AnimatedDecoratedBoxRoute> {
 }
 
 class AnimatedDecoratedBox1 extends StatefulWidget {
-
   AnimatedDecoratedBox1({
     Key key,
     @required this.decoration,
@@ -824,7 +840,7 @@ class AnimatedDecoratedBox1 extends StatefulWidget {
     this.curve = Curves.linear,
     @required this.duration,
     this.reverseDuration,
-});
+  });
 
   final BoxDecoration decoration;
   final Widget child;
@@ -836,8 +852,8 @@ class AnimatedDecoratedBox1 extends StatefulWidget {
   _AnimatedDecoratedBox1State createState() => _AnimatedDecoratedBox1State();
 }
 
-class _AnimatedDecoratedBox1State extends State<AnimatedDecoratedBox1> with SingleTickerProviderStateMixin{
-
+class _AnimatedDecoratedBox1State extends State<AnimatedDecoratedBox1>
+    with SingleTickerProviderStateMixin {
   @protected
   AnimationController get controller => _controller;
   AnimationController _controller;
@@ -905,20 +921,22 @@ class _AnimatedDecoratedBox1State extends State<AnimatedDecoratedBox1> with Sing
   }
 }
 
-
-
 class AnimatedSwitcherCounterRoute extends StatefulWidget {
   @override
-  _AnimatedSwitcherCounterRouteState createState() => _AnimatedSwitcherCounterRouteState();
+  _AnimatedSwitcherCounterRouteState createState() =>
+      _AnimatedSwitcherCounterRouteState();
 }
 
-class _AnimatedSwitcherCounterRouteState extends State<AnimatedSwitcherCounterRoute> {
+class _AnimatedSwitcherCounterRouteState
+    extends State<AnimatedSwitcherCounterRoute> {
   int _count = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("AnimatedSwitcher"),),
+      appBar: AppBar(
+        title: Text("AnimatedSwitcher"),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -928,21 +946,19 @@ class _AnimatedSwitcherCounterRouteState extends State<AnimatedSwitcherCounterRo
                 width: 400.0,
                 height: 100.0,
                 child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 500),
-                    transitionBuilder: (Widget child, Animation<double> animation) {
-                      return SlideTransitionX(
-                          child: child,
-                          direction: AxisDirection.up,
-                          position: animation);
-                    },
+                  duration: const Duration(milliseconds: 500),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return SlideTransitionX(
+                        child: child,
+                        direction: AxisDirection.up,
+                        position: animation);
+                  },
                   child: Text(
                     "$_count",
                     //显示指定key，不同的key会被认为是不同的Text，这样才能执行动画
                     key: ValueKey<int>(_count),
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .headline4,
+                    style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
               ),
@@ -962,39 +978,35 @@ class _AnimatedSwitcherCounterRouteState extends State<AnimatedSwitcherCounterRo
   }
 }
 
-
-
 class StaggerRoute extends StatefulWidget {
   @override
   _StaggerRouteState createState() => _StaggerRouteState();
 }
 
-class _StaggerRouteState extends State<StaggerRoute> with TickerProviderStateMixin{
-
+class _StaggerRouteState extends State<StaggerRoute>
+    with TickerProviderStateMixin {
   AnimationController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this
-    );
+        duration: const Duration(milliseconds: 2000), vsync: this);
   }
 
   Future<Null> _playAnimation() async {
     try {
       await _controller.forward().orCancel;
       await _controller.reverse().orCancel;
-    } on TickerCanceled {
-
-    }
+    } on TickerCanceled {}
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("StaggerRoute"),),
+      appBar: AppBar(
+        title: Text("StaggerRoute"),
+      ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () {
@@ -1020,38 +1032,27 @@ class _StaggerRouteState extends State<StaggerRoute> with TickerProviderStateMix
   }
 }
 
-
 class StaggerAnimation extends StatelessWidget {
-  StaggerAnimation({Key key, this.controller}): super(key: key) {
-
+  StaggerAnimation({Key key, this.controller}) : super(key: key) {
     height = Tween<double>(
       begin: 0,
       end: 300.0,
-    ).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: Interval(
-          0.0, 0.6,
-          curve: Curves.ease
-        ),
-      )
-    );
+    ).animate(CurvedAnimation(
+      parent: controller,
+      curve: Interval(0.0, 0.6, curve: Curves.ease),
+    ));
 
     color = ColorTween(
       begin: Colors.green,
       end: Colors.red,
     ).animate(CurvedAnimation(
       parent: controller,
-      curve: Interval(
-          0.0, 0.6,
-          curve: Curves.ease
-      ),
-      )
-    );
+      curve: Interval(0.0, 0.6, curve: Curves.ease),
+    ));
 
     padding = Tween<EdgeInsets>(
-      begin:EdgeInsets.only(left: .0),
-      end:EdgeInsets.only(left: 100.0),
+      begin: EdgeInsets.only(left: .0),
+      end: EdgeInsets.only(left: 100.0),
     ).animate(
       CurvedAnimation(
         parent: controller,
@@ -1090,7 +1091,6 @@ class StaggerAnimation extends StatelessWidget {
 }
 
 class FadeRoute extends PageRoute {
-
   FadeRoute({
     @required this.builder,
     this.transitionDuration = const Duration(milliseconds: 300),
@@ -1099,7 +1099,7 @@ class FadeRoute extends PageRoute {
     this.barrierColor,
     this.barrierLabel,
     this.maintainState = true,
-});
+  });
 
   final WidgetBuilder builder;
 
@@ -1122,16 +1122,18 @@ class FadeRoute extends PageRoute {
   final bool maintainState;
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-   return builder(context);
+  Widget buildPage(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation) {
+    return builder(context);
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
-   return FadeTransition(
-     opacity: animation,
-     child: builder(context),
-   );
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
+    return FadeTransition(
+      opacity: animation,
+      child: builder(context),
+    );
   }
 }
 
@@ -1139,7 +1141,9 @@ class Route1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Route1"),),
+      appBar: AppBar(
+        title: Text("Route1"),
+      ),
       body: Center(
         child: CupertinoButton(
           color: Colors.blue,
@@ -1168,27 +1172,27 @@ class Route2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Route2"),),
+      appBar: AppBar(
+        title: Text("Route2"),
+      ),
       body: Center(
         child: Padding(
           padding: EdgeInsets.only(left: 16.0, right: 16.0),
           child: Container(
-          width: double.infinity,
-          child: CupertinoButton(
-            color: Colors.blue,
-            child: Text("<- back"),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            width: double.infinity,
+            child: CupertinoButton(
+              color: Colors.blue,
+              child: Text("<- back"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
-        ),
         ),
       ),
     );
   }
 }
-
-
 
 class GrowTransition extends StatelessWidget {
   GrowTransition({this.child, this.animation});
@@ -1220,8 +1224,7 @@ class AnimateBuilderRoute extends StatefulWidget {
 }
 
 class _AnimateBuilderRouteState extends State<AnimateBuilderRoute>
- with SingleTickerProviderStateMixin {
-
+    with SingleTickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
 
@@ -1229,7 +1232,8 @@ class _AnimateBuilderRouteState extends State<AnimateBuilderRoute>
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: const Duration(seconds: 3), vsync: this,
+      duration: const Duration(seconds: 3),
+      vsync: this,
     );
     animation = Tween(begin: 0.0, end: 300.0).animate(controller);
     controller.forward();
@@ -1250,16 +1254,16 @@ class _AnimateBuilderRouteState extends State<AnimateBuilderRoute>
   }
 }
 
-
-
 class AnimatedImage extends AnimatedWidget {
-  AnimatedImage({Key key, Animation<double> animation}) : super(key: key, listenable: animation);
+  AnimatedImage({Key key, Animation<double> animation})
+      : super(key: key, listenable: animation);
 
   @override
   Widget build(BuildContext context) {
     // final Animation<double> animation = listenable;
     return Center(
-      child: Image.asset("./images/nightsky.jpeg",
+      child: Image.asset(
+        "./images/nightsky.jpeg",
         width: (listenable as Animation<double>).value,
         height: (listenable as Animation<double>).value,
       ),
@@ -1273,8 +1277,7 @@ class ScaleAnimationRoute1 extends StatefulWidget {
 }
 
 class _ScaleAnimationRoute1State extends State<ScaleAnimationRoute1>
-  with SingleTickerProviderStateMixin {
-
+    with SingleTickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
 
@@ -1282,7 +1285,8 @@ class _ScaleAnimationRoute1State extends State<ScaleAnimationRoute1>
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: const Duration(seconds: 3), vsync: this,
+      duration: const Duration(seconds: 3),
+      vsync: this,
     );
     animation = Tween(begin: 0.0, end: 300.0).animate(controller);
     controller.forward();
@@ -1303,13 +1307,12 @@ class _ScaleAnimationRoute1State extends State<ScaleAnimationRoute1>
 }
 
 class ScaleAnimationRoute extends StatefulWidget {
-@override
+  @override
   _ScaleAnimationRouteState createState() => _ScaleAnimationRouteState();
 }
 
 class _ScaleAnimationRouteState extends State<ScaleAnimationRoute>
     with SingleTickerProviderStateMixin {
-
   Animation<double> animation;
   AnimationController controller;
 
@@ -1320,8 +1323,7 @@ class _ScaleAnimationRouteState extends State<ScaleAnimationRoute>
         duration: const Duration(seconds: 3), vsync: this);
     animation = new Tween(begin: 0.0, end: 300.0).animate(controller)
       ..addListener(() {
-        setState(() {
-        });
+        setState(() {});
       });
     controller.forward();
   }
@@ -1329,14 +1331,11 @@ class _ScaleAnimationRouteState extends State<ScaleAnimationRoute>
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Image.asset("./images/nightsky.jpeg",
-        width: animation.value,
-        height: animation.value
-      ),
+      child: Image.asset("./images/nightsky.jpeg",
+          width: animation.value, height: animation.value),
     );
   }
 }
-
 
 class MyNotification extends Notification {
   MyNotification(this.msg);
@@ -1366,9 +1365,9 @@ class _NotificationRouteState extends State<NotificationRoute> {
           children: [
             // 这个不起作用，因为 context 是 widget 树的根 context
             RaisedButton(
-            onPressed: () => MyNotification("Hi").dispatch(context),
-            child: Text("Send Notification"),
-           ),
+              onPressed: () => MyNotification("Hi").dispatch(context),
+              child: Text("Send Notification"),
+            ),
             Builder(
               builder: (context) {
                 return RaisedButton(
@@ -1385,10 +1384,10 @@ class _NotificationRouteState extends State<NotificationRoute> {
   }
 }
 
-
 class ListenerNoConflictRoute extends StatefulWidget {
   @override
-  _ListenerNoConflictRouteState createState() => _ListenerNoConflictRouteState();
+  _ListenerNoConflictRouteState createState() =>
+      _ListenerNoConflictRouteState();
 }
 
 class _ListenerNoConflictRouteState extends State<ListenerNoConflictRoute> {
@@ -1411,7 +1410,9 @@ class _ListenerNoConflictRouteState extends State<ListenerNoConflictRoute> {
                 print("up");
               },
               child: GestureDetector(
-                child: CircleAvatar(child: Text("B"),),
+                child: CircleAvatar(
+                  child: Text("B"),
+                ),
                 onHorizontalDragUpdate: (details) {
                   setState(() {
                     _left += details.delta.dx;
@@ -1429,11 +1430,11 @@ class _ListenerNoConflictRouteState extends State<ListenerNoConflictRoute> {
   }
 }
 
-
 // 手势识别会有冲突，遇到冲突可以识别原始 Pointer 事件
 class GestureConflictTestRoute extends StatefulWidget {
   @override
-  _GestureConflictTestRouteState createState() => _GestureConflictTestRouteState();
+  _GestureConflictTestRouteState createState() =>
+      _GestureConflictTestRouteState();
 }
 
 class _GestureConflictTestRouteState extends State<GestureConflictTestRoute> {
@@ -1442,14 +1443,18 @@ class _GestureConflictTestRouteState extends State<GestureConflictTestRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("GestureConflictTestRoute"),),
+      appBar: AppBar(
+        title: Text("GestureConflictTestRoute"),
+      ),
       body: Center(
         child: Stack(
           children: [
             Positioned(
               left: _left,
               child: GestureDetector(
-                child: CircleAvatar(child: Text("A"),),
+                child: CircleAvatar(
+                  child: Text("A"),
+                ),
                 onHorizontalDragUpdate: (details) {
                   setState(() {
                     _left += details.delta.dx;
@@ -1473,7 +1478,6 @@ class _GestureConflictTestRouteState extends State<GestureConflictTestRoute> {
   }
 }
 
-
 class BothDirectionTestRoute extends StatefulWidget {
   @override
   _BothDirectionTestRouteState createState() => _BothDirectionTestRouteState();
@@ -1486,7 +1490,9 @@ class _BothDirectionTestRouteState extends State<BothDirectionTestRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("BothDirection"),),
+      appBar: AppBar(
+        title: Text("BothDirection"),
+      ),
       body: Center(
         child: Stack(
           children: [
@@ -1544,7 +1550,9 @@ class __GestureRecognizerState extends State<_GestureRecognizer> {
       });
     };
     return Scaffold(
-      appBar: AppBar(title: Text("GestureRecognizer"),),
+      appBar: AppBar(
+        title: Text("GestureRecognizer"),
+      ),
       body: Center(
         child: Text.rich(
           TextSpan(
@@ -1553,9 +1561,7 @@ class __GestureRecognizerState extends State<_GestureRecognizer> {
               TextSpan(
                 text: "点我变色",
                 style: TextStyle(
-                  fontSize: 30.0,
-                  color: _toggle ? Colors.blue : Colors.red
-                ),
+                    fontSize: 30.0, color: _toggle ? Colors.blue : Colors.red),
                 recognizer: _tapGestureRecognizer,
               ),
               TextSpan(text: "你好世界"),
@@ -1566,7 +1572,6 @@ class __GestureRecognizerState extends State<_GestureRecognizer> {
     );
   }
 }
-
 
 class _ScaleTestRoute extends StatefulWidget {
   @override
@@ -1579,21 +1584,24 @@ class __ScaleTestRouteState extends State<_ScaleTestRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Scale"),),
-      body: Center(
-        child: GestureDetector(
-          child: Image.asset("./images/nightsky.jpeg", width: _width,),
-          onScaleUpdate: (details) {
-            setState(() {
-              _width = 200.0 * details.scale.clamp(0.8, 20.0);
-            });
-          },
-        )
+      appBar: AppBar(
+        title: Text("Scale"),
       ),
+      body: Center(
+          child: GestureDetector(
+        child: Image.asset(
+          "./images/nightsky.jpeg",
+          width: _width,
+        ),
+        onScaleUpdate: (details) {
+          setState(() {
+            _width = 200.0 * details.scale.clamp(0.8, 20.0);
+          });
+        },
+      )),
     );
   }
 }
-
 
 class _DragVertical extends StatefulWidget {
   @override
@@ -1606,7 +1614,9 @@ class __DragVerticalState extends State<_DragVertical> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("DragVertical"),),
+      appBar: AppBar(
+        title: Text("DragVertical"),
+      ),
       body: Stack(
         children: [
           Positioned(
@@ -1626,7 +1636,6 @@ class __DragVerticalState extends State<_DragVertical> {
   }
 }
 
-
 class _Drag extends StatefulWidget {
   @override
   __DragState createState() => __DragState();
@@ -1638,14 +1647,18 @@ class __DragState extends State<_Drag> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Drag"),),
+      appBar: AppBar(
+        title: Text("Drag"),
+      ),
       body: Stack(
         children: [
           Positioned(
             top: _top,
             left: _left,
             child: GestureDetector(
-              child: CircleAvatar(child: Text("A"),),
+              child: CircleAvatar(
+                child: Text("A"),
+              ),
               onPanDown: (DragDownDetails e) {
                 print("用户手指按下： ${e.globalPosition}");
               },
@@ -1666,10 +1679,10 @@ class __DragState extends State<_Drag> {
   }
 }
 
-
 class GestureDetectorTestRoute extends StatefulWidget {
   @override
-  _GestureDetectorTestRouteState createState() => _GestureDetectorTestRouteState();
+  _GestureDetectorTestRouteState createState() =>
+      _GestureDetectorTestRouteState();
 }
 
 class _GestureDetectorTestRouteState extends State<GestureDetectorTestRoute> {
@@ -1677,7 +1690,9 @@ class _GestureDetectorTestRouteState extends State<GestureDetectorTestRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("GestureDetector"),),
+      appBar: AppBar(
+        title: Text("GestureDetector"),
+      ),
       body: Center(
         child: GestureDetector(
           child: Container(
@@ -1685,8 +1700,10 @@ class _GestureDetectorTestRouteState extends State<GestureDetectorTestRoute> {
             color: Colors.blue,
             width: 200.0,
             height: 100.0,
-            child: Text(_operation,
-              style: TextStyle(color: Colors.white),),
+            child: Text(
+              _operation,
+              style: TextStyle(color: Colors.white),
+            ),
           ),
           onTap: () => updateText("Tap"),
           onDoubleTap: () => updateText("DoubleTap"),
@@ -1695,14 +1712,13 @@ class _GestureDetectorTestRouteState extends State<GestureDetectorTestRoute> {
       ),
     );
   }
-  
+
   void updateText(String text) {
     setState(() {
       _operation = text;
     });
   }
 }
-
 
 class PointerTranslucentRoute extends StatelessWidget {
   @override
@@ -1725,7 +1741,9 @@ class PointerTranslucentRoute extends StatelessWidget {
                 constraints: BoxConstraints.tight(Size(200.0, 100.0)),
                 child: DecoratedBox(
                   decoration: BoxDecoration(color: Colors.grey),
-                  child: Center(child: Text("左上角 200 * 100 区域非文本点击区域"),),
+                  child: Center(
+                    child: Text("左上角 200 * 100 区域非文本点击区域"),
+                  ),
                 ),
               ),
               onPointerDown: (event) => print("down1"),
@@ -1739,7 +1757,6 @@ class PointerTranslucentRoute extends StatelessWidget {
 }
 
 class PointerRoute extends StatefulWidget {
-
   @override
   _PointerRouteState createState() => _PointerRouteState();
 }
@@ -1810,24 +1827,22 @@ class FutureBuilderRoute extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: FutureBuilder<String>(
-          future: mockNetworkData(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return Text("Error: ${snapshot.error}");
+            future: mockNetworkData(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return Text("Error: ${snapshot.error}");
+                } else {
+                  return Text("Contents: ${snapshot.data}");
+                }
               } else {
-                return Text("Contents: ${snapshot.data}");
+                return CircularProgressIndicator();
               }
-            } else {
-              return CircularProgressIndicator();
-            }
-          }
-        ),
+            }),
       ),
     );
   }
 }
-
 
 class ThemeTestRoute extends StatefulWidget {
   @override
@@ -1842,9 +1857,8 @@ class _ThemeTestRouteState extends State<ThemeTestRoute> {
     ThemeData themeData = Theme.of(context);
     return Theme(
       data: ThemeData(
-        primarySwatch: _themeColor,
-        iconTheme: IconThemeData(color: _themeColor)
-      ),
+          primarySwatch: _themeColor,
+          iconTheme: IconThemeData(color: _themeColor)),
       child: Scaffold(
         appBar: AppBar(title: Text("主题测试")),
         body: Column(
@@ -1873,23 +1887,20 @@ class _ThemeTestRouteState extends State<ThemeTestRoute> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              _themeColor = _themeColor == Colors.teal ? Colors.blue : Colors.teal;
-            });
-          },
-          child: Icon(Icons.palette)
-        ),
+            onPressed: () {
+              setState(() {
+                _themeColor =
+                    _themeColor == Colors.teal ? Colors.blue : Colors.teal;
+              });
+            },
+            child: Icon(Icons.palette)),
       ),
     );
   }
 }
 
 class InheritedProvider<T> extends InheritedWidget {
-  InheritedProvider({
-    @required this.data,
-    Widget child
-  }) : super(child: child);
+  InheritedProvider({@required this.data, Widget child}) : super(child: child);
 
   final T data;
 
@@ -1920,15 +1931,14 @@ class ChangeNotifier implements Listenable {
 }
 
 class ShareDataWidget extends InheritedWidget {
-  ShareDataWidget({
-    @required this.data,
-    Widget child
-  }) : super(child: child);
+  ShareDataWidget({@required this.data, Widget child}) : super(child: child);
 
   final int data;
 
   static ShareDataWidget of(BuildContext context) {
-    return context.getElementForInheritedWidgetOfExactType<ShareDataWidget>().widget;
+    return context
+        .getElementForInheritedWidgetOfExactType<ShareDataWidget>()
+        .widget;
   }
 
   @override
@@ -1946,10 +1956,7 @@ class _TestWidget extends StatefulWidget {
 class __TestWidgetState extends State<_TestWidget> {
   @override
   Widget build(BuildContext context) {
-    return Text(ShareDataWidget
-    .of(context)
-    .data
-    .toString());
+    return Text(ShareDataWidget.of(context).data.toString());
   }
 
   @override
@@ -1961,7 +1968,8 @@ class __TestWidgetState extends State<_TestWidget> {
 
 class InheritedWidgetTestRoute extends StatefulWidget {
   @override
-  _InheritedWidgetTestRouteState createState() => _InheritedWidgetTestRouteState();
+  _InheritedWidgetTestRouteState createState() =>
+      _InheritedWidgetTestRouteState();
 }
 
 class _InheritedWidgetTestRouteState extends State<InheritedWidgetTestRoute> {
@@ -1970,7 +1978,9 @@ class _InheritedWidgetTestRouteState extends State<InheritedWidgetTestRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("InheritedWidget"),),
+      appBar: AppBar(
+        title: Text("InheritedWidget"),
+      ),
       body: Center(
         child: ShareDataWidget(
           data: count,
@@ -1993,8 +2003,6 @@ class _InheritedWidgetTestRouteState extends State<InheritedWidgetTestRoute> {
   }
 }
 
-
-
 class WillPopScopeTestRoute extends StatefulWidget {
   @override
   _WillPopScopeTestRouteState createState() => _WillPopScopeTestRouteState();
@@ -2007,7 +2015,8 @@ class _WillPopScopeTestRouteState extends State<WillPopScopeTestRoute> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (_lastPressedAt == null || DateTime.now().difference(_lastPressedAt) > Duration(seconds: 1)) {
+        if (_lastPressedAt == null ||
+            DateTime.now().difference(_lastPressedAt) > Duration(seconds: 1)) {
           _lastPressedAt = DateTime.now();
           return false;
         }
@@ -2025,11 +2034,12 @@ class _WillPopScopeTestRouteState extends State<WillPopScopeTestRoute> {
 
 class ScrollNotificationTestRoute extends StatefulWidget {
   @override
-  _ScrollNotificationTestRouteState createState() => _ScrollNotificationTestRouteState();
+  _ScrollNotificationTestRouteState createState() =>
+      _ScrollNotificationTestRouteState();
 }
 
-class _ScrollNotificationTestRouteState extends State<ScrollNotificationTestRoute> {
-
+class _ScrollNotificationTestRouteState
+    extends State<ScrollNotificationTestRoute> {
   String _progress = "0%";
 
   @override
@@ -2038,7 +2048,8 @@ class _ScrollNotificationTestRouteState extends State<ScrollNotificationTestRout
       body: Scrollbar(
         child: NotificationListener<ScrollNotification>(
           onNotification: (notification) {
-            double progress = notification.metrics.pixels / notification.metrics.maxScrollExtent;
+            double progress = notification.metrics.pixels /
+                notification.metrics.maxScrollExtent;
             setState(() {
               _progress = "${(progress * 100).toInt()}";
             });
@@ -2069,10 +2080,10 @@ class _ScrollNotificationTestRouteState extends State<ScrollNotificationTestRout
   }
 }
 
-
 class ScrollControllerTestRoute extends StatefulWidget {
   @override
-  _ScrollControllerTestRouteState createState() => _ScrollControllerTestRouteState();
+  _ScrollControllerTestRouteState createState() =>
+      _ScrollControllerTestRouteState();
 }
 
 class _ScrollControllerTestRouteState extends State<ScrollControllerTestRoute> {
@@ -2105,29 +2116,34 @@ class _ScrollControllerTestRouteState extends State<ScrollControllerTestRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("scroll controller"),),
+      appBar: AppBar(
+        title: Text("scroll controller"),
+      ),
       body: Scrollbar(
         child: ListView.builder(
           itemCount: 100,
           itemExtent: 50.0,
           controller: _controller,
           itemBuilder: (context, index) {
-            return ListTile(title: Text("$index"),);
+            return ListTile(
+              title: Text("$index"),
+            );
           },
         ),
       ),
-      floatingActionButton: !showToTopBtn ? null : FloatingActionButton(
-        child: Icon(Icons.arrow_upward),
-        onPressed: () {
-          _controller.animateTo(.0,
-              duration: Duration(milliseconds: 200),
-              curve: Curves.bounceInOut);
-        },
-      ),
+      floatingActionButton: !showToTopBtn
+          ? null
+          : FloatingActionButton(
+              child: Icon(Icons.arrow_upward),
+              onPressed: () {
+                _controller.animateTo(.0,
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.bounceInOut);
+              },
+            ),
     );
   }
 }
-
 
 class CustomScrollViewTestRoute extends StatelessWidget {
   @override
@@ -2193,7 +2209,6 @@ class InfiniteGridView extends StatefulWidget {
 }
 
 class _InfiniteGridViewState extends State<InfiniteGridView> {
-
   List<IconData> _icons = [];
 
   @override
@@ -2204,17 +2219,17 @@ class _InfiniteGridViewState extends State<InfiniteGridView> {
 
   void _retrieveIcons() {
     Future.delayed(Duration(milliseconds: 200)).then((e) => {
-      setState(() {
-        _icons.addAll([
-          Icons.ac_unit,
-          Icons.airport_shuttle,
-          Icons.all_inclusive,
-          Icons.beach_access,
-          Icons.cake,
-          Icons.free_breakfast
-        ]);
-      })
-    });
+          setState(() {
+            _icons.addAll([
+              Icons.ac_unit,
+              Icons.airport_shuttle,
+              Icons.all_inclusive,
+              Icons.beach_access,
+              Icons.cake,
+              Icons.free_breakfast
+            ]);
+          })
+        });
   }
 
   @override
@@ -2222,17 +2237,17 @@ class _InfiniteGridViewState extends State<InfiniteGridView> {
     return Scaffold(
       appBar: AppBar(title: Text("IGV")),
       body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: _icons.length,
-        itemBuilder: (context, index) {
-          if (index == _icons.length - 1 && _icons.length < 200) {
-            _retrieveIcons();
-          }
-          return Icon(_icons[index]);
-        }),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: _icons.length,
+          itemBuilder: (context, index) {
+            if (index == _icons.length - 1 && _icons.length < 200) {
+              _retrieveIcons();
+            }
+            return Icon(_icons[index]);
+          }),
     );
   }
 }
@@ -2271,7 +2286,9 @@ class TestHeaderListViewRoute extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            ListTile(title: Text("商品列表"),),
+            ListTile(
+              title: Text("商品列表"),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: 100,
@@ -2301,7 +2318,7 @@ class _InfiniteListViewState extends State<InfiniteListView> {
     Future.delayed(Duration(seconds: 2)).then((value) {
       setState(() {
         _words.insertAll(_words.length - 1,
-          generateWordPairs().take(20).map((e) => e.asPascalCase).toList());
+            generateWordPairs().take(20).map((e) => e.asPascalCase).toList());
       });
     });
   }
@@ -2327,31 +2344,35 @@ class _InfiniteListViewState extends State<InfiniteListView> {
                     child: SizedBox(
                       width: 24.0,
                       height: 24.0,
-                      child: CircularProgressIndicator(strokeWidth: 2.0,),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                      ),
                     ),
                   );
                 } else {
                   return Container(
                       alignment: Alignment.center,
                       padding: EdgeInsets.all(16.0),
-                      child: Text("没有更多了", style: TextStyle(color: Colors.grey),)
-                  );
+                      child: Text(
+                        "没有更多了",
+                        style: TextStyle(color: Colors.grey),
+                      ));
                 }
               }
               return ListTile(
                   leading: FlutterLogo(),
                   trailing: Icon(Icons.more_vert),
                   subtitle: Text("This is second line----"),
-                  title: Text(_words[index])
-              );
+                  title: Text(_words[index]));
             },
-            separatorBuilder: (context, index) => Divider(height: .0,),
+            separatorBuilder: (context, index) => Divider(
+                  height: .0,
+                ),
             itemCount: _words.length),
       ),
     );
   }
 }
-
 
 class TestListViewRoute extends StatelessWidget {
   @override
@@ -2378,8 +2399,12 @@ class SingleChildScrollViewTestRoute extends StatelessWidget {
       child: SingleChildScrollView(
         child: Center(
           child: Column(
-            children: str.split("")
-                .map((c) => Text(c, textScaleFactor: 2.0,))
+            children: str
+                .split("")
+                .map((c) => Text(
+                      c,
+                      textScaleFactor: 2.0,
+                    ))
                 .toList(),
           ),
         ),
@@ -2388,40 +2413,37 @@ class SingleChildScrollViewTestRoute extends StatelessWidget {
   }
 }
 
-
 class ContainerRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Container(
-          constraints: BoxConstraints.tightFor(width: 200.0, height: 150.0),
-          decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topLeft,
-              radius: 2.0,
-              colors: [Colors.red, Colors.orange],
+      child: Container(
+        constraints: BoxConstraints.tightFor(width: 200.0, height: 150.0),
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment.topLeft,
+            radius: 2.0,
+            colors: [Colors.red, Colors.orange],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black54,
+              offset: Offset(2.0, 2.0),
+              blurRadius: 4.0,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black54,
-                offset: Offset(2.0, 2.0),
-                blurRadius: 4.0,
-              ),
-            ],
-            borderRadius: BorderRadius.circular(24.0),
-          ),
-          transform: Matrix4.rotationZ(0.2),
-          alignment: Alignment.center,
-          child: Text(
-            "5.20",
-            style: TextStyle(color: Colors.white, fontSize: 14.0),
-          ),
+          ],
+          borderRadius: BorderRadius.circular(24.0),
         ),
+        transform: Matrix4.rotationZ(0.2),
+        alignment: Alignment.center,
+        child: Text(
+          "5.20",
+          style: TextStyle(color: Colors.white, fontSize: 14.0),
+        ),
+      ),
     );
-
   }
 }
-
 
 class WrapRoute extends StatelessWidget {
   @override
@@ -2430,41 +2452,44 @@ class WrapRoute extends StatelessWidget {
       child: Center(
         child: Card(
           child: Wrap(
-          spacing: 8.0,
-          runSpacing: 4.0,
-          alignment: WrapAlignment.start,
-          children: [
-            Chip(
-              avatar: CircleAvatar(
-                backgroundColor: Colors.yellowAccent,
-                child: Text("A"),
+            spacing: 8.0,
+            runSpacing: 4.0,
+            alignment: WrapAlignment.start,
+            children: [
+              Chip(
+                avatar: CircleAvatar(
+                  backgroundColor: Colors.yellowAccent,
+                  child: Text("A"),
+                ),
+                label: Text("Alex"),
               ),
-              label: Text("Alex"),
-            ),
-            Chip(
-              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('M')),
-              label: new Text('Lafayette'),
-            ),
-            Chip(
-              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('H')),
-              label: new Text('Mulligan'),
-            ),
-            Chip(
-              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('J')),
-              label: new Text('Laurens'),
-            ),
-            Chip(
-              avatar: new CircleAvatar(backgroundColor: Colors.blue, child: Text('J')),
-              label: new Text('Laurens'),
-            ),
-          ],
+              Chip(
+                avatar: new CircleAvatar(
+                    backgroundColor: Colors.blue, child: Text('M')),
+                label: new Text('Lafayette'),
+              ),
+              Chip(
+                avatar: new CircleAvatar(
+                    backgroundColor: Colors.blue, child: Text('H')),
+                label: new Text('Mulligan'),
+              ),
+              Chip(
+                avatar: new CircleAvatar(
+                    backgroundColor: Colors.blue, child: Text('J')),
+                label: new Text('Laurens'),
+              ),
+              Chip(
+                avatar: new CircleAvatar(
+                    backgroundColor: Colors.blue, child: Text('J')),
+                label: new Text('Laurens'),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
 
 class FlexLayoutTestRoute extends StatelessWidget {
   @override
@@ -2523,7 +2548,6 @@ class FlexLayoutTestRoute extends StatelessWidget {
   }
 }
 
-
 class IndicatorRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -2551,7 +2575,7 @@ abstract class Event {
 }
 
 class _AnonymousEvent implements Event {
-  _AnonymousEvent({Function run}): _run = run;
+  _AnonymousEvent({Function run}) : _run = run;
   // 这里即使加了 void，和没加效果一样，void Function() 和 Function() 指的都是 dynamic Function() 类型
   final void Function() _run;
 
@@ -2575,7 +2599,7 @@ class _ProgressRouteState extends State<ProgressRoute>
     });
     //动画执行时间3秒
     _animationController =
-    new AnimationController(vsync: this, duration: Duration(seconds: 3));
+        new AnimationController(vsync: this, duration: Duration(seconds: 3));
     _animationController.forward();
     _animationController.addListener(() => setState(() => {}));
     super.initState();
@@ -2651,27 +2675,27 @@ class _FormTestRouteState extends State<FormTestRoute> {
                 },
               ),
               Padding(
-               padding: const EdgeInsets.only(top: 28.0),
-               child: Row(
-                 children: [
-                   Expanded(
-                     child: RaisedButton(
-                       padding: EdgeInsets.all(15.0),
-                       child: Text("登录"),
-                       color:Theme.of(context).primaryColor,
-                       textColor: Colors.white,
-                       onPressed: () {
-                         // 在这里不能通过 Form.of(context) 获取 state，context 不对
-                         // print(Form.of(context));
+                padding: const EdgeInsets.only(top: 28.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: RaisedButton(
+                        padding: EdgeInsets.all(15.0),
+                        child: Text("登录"),
+                        color: Theme.of(context).primaryColor,
+                        textColor: Colors.white,
+                        onPressed: () {
+                          // 在这里不能通过 Form.of(context) 获取 state，context 不对
+                          // print(Form.of(context));
 
-                         if ((_formKey.currentState as FormState).validate()) {
-                           print("验证通过！！！");
-                         }
-                       },
-                     ),
-                   ),
-                 ],
-               ),
+                          if ((_formKey.currentState as FormState).validate()) {
+                            print("验证通过！！！");
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -2710,7 +2734,6 @@ class _FocusTestRouteState extends State<FocusTestRoute> {
                 // ),
               ),
             ),
-
             TextField(
               focusNode: focusNode2,
               decoration: InputDecoration(
@@ -2794,7 +2817,8 @@ class ButtonWidget extends StatelessWidget {
               color: Colors.lightGreen,
               highlightColor: Colors.lightGreen[700],
               colorBrightness: Brightness.light,
-              child: Text("\uE000",
+              child: Text(
+                "\uE000",
                 style: TextStyle(
                   fontFamily: "MaterialIcons",
                   fontSize: 24.0,
@@ -2802,7 +2826,8 @@ class ButtonWidget extends StatelessWidget {
                 ),
               ),
               textColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24.0)),
             ),
             TextField(
               autofocus: true,
@@ -2811,17 +2836,15 @@ class ButtonWidget extends StatelessWidget {
                 print("onChange: $value");
               },
               decoration: InputDecoration(
-                labelText: "用户名",
-                hintText: "用户名或密码",
-                prefixIcon: Icon(Icons.person)
-              ),
+                  labelText: "用户名",
+                  hintText: "用户名或密码",
+                  prefixIcon: Icon(Icons.person)),
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "密码",
-                hintText: "您的登录密码",
-                prefixIcon: Icon(Icons.lock)
-              ),
+                  labelText: "密码",
+                  hintText: "您的登录密码",
+                  prefixIcon: Icon(Icons.lock)),
               obscureText: true,
             ),
           ],
@@ -2849,8 +2872,6 @@ class ImageWidget extends StatelessWidget {
     );
   }
 }
-
-
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -2888,11 +2909,11 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
             FlatButton(
-              onPressed: () {
-                Navigator.pushNamed(context, "tip_route");
-              },
-              child: Text("open new route"),
-              textColor:Colors.yellow),
+                onPressed: () {
+                  Navigator.pushNamed(context, "tip_route");
+                },
+                child: Text("open new route"),
+                textColor: Colors.yellow),
             RandomWordsWidget(),
           ],
         ),
@@ -2921,20 +2942,17 @@ class NewRoute extends StatelessWidget {
   }
 }
 
-
 class TipRoute extends StatelessWidget {
   TipRoute({
     Key key,
     @required this.text,
-}) : super(key: key);
+  }) : super(key: key);
   final String text;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("提示")
-      ),
+      appBar: AppBar(title: Text("提示")),
       body: Padding(
         padding: EdgeInsets.all(18),
         child: Center(
@@ -2962,14 +2980,12 @@ class RouterTestRoute extends StatelessWidget {
           print("！2@@#@@");
           // 这里的 await 会把当前线程阻塞，有点类似于 java 的 Future
           var result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return TipRoute(
-                    text: "我是提示！！！！",
-                  );
-                }
-              ),
+            context,
+            MaterialPageRoute(builder: (context) {
+              return TipRoute(
+                text: "我是提示！！！！",
+              );
+            }),
           );
           print("路由返回值：$result");
           print("!!!!!asdasda");
@@ -2993,10 +3009,7 @@ class RandomWordsWidget extends StatelessWidget {
 
 // StatefulWidget example
 class CounterWidget extends StatefulWidget {
-  const CounterWidget ({
-    Key key,
-    this.initValue: 0
-});
+  const CounterWidget({Key key, this.initValue: 0});
 
   final int initValue;
 
@@ -3068,8 +3081,9 @@ class FindAncestorRoute extends StatelessWidget {
         title: Text("子树中获取对象"),
       ),
       body: Center(
-        child: Builder(builder: (context) {
-          return RaisedButton(
+        child: Builder(
+          builder: (context) {
+            return RaisedButton(
               onPressed: () {
                 // 通过 context 获取父级 widget 的 state
                 // ScaffoldState _state = context.findAncestorStateOfType<ScaffoldState>();
@@ -3087,8 +3101,9 @@ class FindAncestorRoute extends StatelessWidget {
                 _state.openDrawer();
               },
               child: Text("显示 snackbar"),
-          );
-        },),
+            );
+          },
+        ),
       ),
     );
   }
@@ -3098,13 +3113,13 @@ class CupertinoTestRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        child: Center(
-          child: CupertinoButton(
-            color: CupertinoColors.activeGreen,
-            child: Text("press"),
-            onPressed: () {},
-          ),
+      child: Center(
+        child: CupertinoButton(
+          color: CupertinoColors.activeGreen,
+          child: Text("press"),
+          onPressed: () {},
         ),
+      ),
       navigationBar: CupertinoNavigationBar(
         middle: Text("Cupertino Demo"),
       ),
@@ -3160,7 +3175,6 @@ class _ParentWidgetState extends State<ParentWidget> {
   void _handleTapboxChanged(bool newValue) {
     setState(() {
       _active = newValue;
-
     });
   }
 
@@ -3182,7 +3196,7 @@ class _ParentWidgetState extends State<ParentWidget> {
 
 class TapboxB extends StatelessWidget {
   TapboxB({Key key, this.active: false, @required this.onChanged})
-  : super(key: key) {
+      : super(key: key) {
     print("TapboxB created");
   }
 
@@ -3242,7 +3256,7 @@ class _ParentWidgetCState extends State<ParentWidgetC> {
 
 class TapboxC extends StatefulWidget {
   TapboxC({Key key, this.active: false, @required this.onChanged})
-    : super(key: key);
+      : super(key: key);
 
   final bool active;
   final ValueChanged<bool> onChanged;
@@ -3280,26 +3294,25 @@ class _TapboxCState extends State<TapboxC> {
   Widget build(BuildContext context) {
     print("tapBoxC build called");
     return new GestureDetector(
-      onTapDown: _handleTapDown,
-      onTapUp: _handleTapUp,
-      onTap: _handleTap,
-      onTapCancel: _handleTapCancel,
-      child: new Container(
-        child: new Center(
-          child: new Text(
-            widget.active ? "Active" : "Inactive",
-            style: new TextStyle(fontSize: 32.0, color: Colors.white),
+        onTapDown: _handleTapDown,
+        onTapUp: _handleTapUp,
+        onTap: _handleTap,
+        onTapCancel: _handleTapCancel,
+        child: new Container(
+          child: new Center(
+            child: new Text(
+              widget.active ? "Active" : "Inactive",
+              style: new TextStyle(fontSize: 32.0, color: Colors.white),
+            ),
           ),
-        ),
-        width: 200.0,
-        height: 200.0,
-        decoration: new BoxDecoration(
-          color: widget.active ? Colors.lightGreen[700] : Colors.grey[600],
-          border: _highlight ? new Border.all(
-            color: Colors.teal[700],
-            width: 10.0) : null,
-        ),
-      )
-    );
+          width: 200.0,
+          height: 200.0,
+          decoration: new BoxDecoration(
+            color: widget.active ? Colors.lightGreen[700] : Colors.grey[600],
+            border: _highlight
+                ? new Border.all(color: Colors.teal[700], width: 10.0)
+                : null,
+          ),
+        ));
   }
 }
