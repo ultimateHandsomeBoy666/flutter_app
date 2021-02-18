@@ -38,6 +38,8 @@ dev_dependencies:
 
   dio: ^3.0.10
 
+  web_socket_channel: ^1.2.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
