@@ -14,6 +14,7 @@ import 'dart:core';
 import 'package:dio/dio.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
@@ -24,6 +25,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale("en", "US"),
+        const Locale("zh", "CN"),
+      ],
       title: 'Flutter Demo',
       initialRoute: "/",
       theme: ThemeData(
